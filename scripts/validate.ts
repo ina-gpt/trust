@@ -166,7 +166,51 @@ function v6v10Marks(r: Register) {
     }
 
     // A person's name in a public permission record is an R8 breach.
-    if (/\b[A-ZÄÖÜ][a-zäöüß]+\s+[A-ZÄÖÜ][a-zäöüß]+\b/.test(m.grantor) && !/\b(GmbH|AISBL|e\.V\.|Association|Verband|Institute|Ltd|Inc|SE|AG)\b/.test(m.grantor)) {
+    //
+    // The organisation allowlist below replaced
+    //   /\b(GmbH|AISBL|e\.V\.|Association|Verband|Institute|Ltd|Inc|SE|AG)\b/
+    // which had TWO DEAD ENTRIES, found on 2026-09-12 when it rejected
+    // "Bundesverband Deutsche Startups e.V." as a natural person:
+    //   - `\be\.V\.\b` can never match. The trailing \b sits after a literal
+    //     ".", so it needs a word character to its right; at end-of-string or
+    //     before whitespace there is none. Every "e.V." in the corpus missed.
+    //   - `Verband` is case-sensitive and boundary-anchored, so it matches
+    //     "Verband" but not the compound "Bundesverband", which is how most
+    //     German associations actually name themselves.
+    // An allowlist entry that cannot fire is a decorative allowlist. These are
+    // split into explicit patterns so each one's flags are visible: the German
+    // compounds are case-insensitive (they appear mid-word), while short forms
+    // like AG and SE stay case-sensitive and boundary-anchored so they cannot
+    // match inside a personal name.
+    const ORG_MARKERS: RegExp[] = [
+      /e\.\s?V\./i, /verband/i, /verein/i, /gesellschaft/i, /genossenschaft/i,
+      /association/i, /institut/i, /stiftung/i, /foundation/i, /alliance/i,
+      /federation/i, /council/i, /chamber/i, /kammer/i, /society/i, /consortium/i,
+      /\bAISBL\b/i, /\bASBL\b/i, /\bLtd\b/i, /\bInc\b/i, /\bLLC\b/i, /\bBV\b/i,
+      /\bGmbH\b/, /\bgGmbH\b/, /\bmbH\b/, /\bAG\b/, /\bSE\b/, /\bKG\b/, /\bOHG\b/,
+    ];
+    // STRIP the markers and look at what is LEFT. An allowlist alone launders a
+    // personal name the moment an organisational word is appended to it:
+    // "Jane Doe Institut" satisfied /institut/i and sailed through, which the
+    // n19 fixture caught. If removing every organisational token leaves a bare
+    // two-word personal name, it IS a personal name with a word stapled on.
+    //
+    //   "Jane Doe Institut"                     -> "Jane Doe"                 PERSON
+    //   "Bundesverband Deutsche Startups e.V."  -> "Bundes Deutsche Startups" ORG
+    //   "TÜV SÜD Management Service GmbH"       -> "TÜV SÜD Management Service" ORG
+    //
+    // Known limitation, stated rather than hidden: a two-word personal name
+    // followed by a strong legal form ("Jane Doe GmbH") is indistinguishable
+    // from a one-person company, and is accepted. That is the correct answer —
+    // a sole-trader company IS the organisation — but it means this rule is a
+    // guard against carelessness, not against a determined author.
+    const stripped = ORG_MARKERS.reduce((acc, r) => acc.replace(new RegExp(r.source, r.flags.includes('i') ? 'gi' : 'g'), ' '), m.grantor)
+      .replace(/[\u2013\u2014,.;:]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const bareName = /^[A-ZÄÖÜ][a-zäöüß]+\s+[A-ZÄÖÜ][a-zäöüß]+$/.test(stripped);
+    const looksOrganisational = ORG_MARKERS.some((r) => r.test(m.grantor)) && !bareName;
+    if (/\b[A-ZÄÖÜ][a-zäöüß]+\s+[A-ZÄÖÜ][a-zäöüß]+\b/.test(m.grantor) && !looksOrganisational) {
       v('V10', `${at}.grantor`, 'looks like a natural person; the grantor must be the granting ORGANISATION (R8)');
     }
 
@@ -265,6 +309,59 @@ function v8Fundstelle(r: Register, files: Array<{ path: string; text: string }>)
  */
 const HUMAN_VERIFY_MAX_AGE_DAYS = 180;
 
+/**
+ * V12 — a `held` claim must name HOW it is backed.
+ *
+ * Added 2026-09-12, when a membership that is genuinely held could not be
+ * recorded as such: its member-directory entry is not live, so there is no
+ * public URL, and the register had only one shape for evidence — a link. The
+ * honest answer is not to weaken `held`; it is to say which KIND of evidence
+ * stands behind it.
+ *
+ *   public_registry     evidence_url must be present. Anyone can open it.
+ *   document_on_request document_ref must name the document AND its date.
+ *
+ * The date is the load-bearing half. "The confirmation email" is not a
+ * reference; "Aufnahmebestätigung, 2026-07-14" is. A tier is therefore never a
+ * softer pass — it is a different, equally checkable obligation, and an entry
+ * that declares document_on_request without a date fails here.
+ *
+ * Legacy tolerance, deliberately narrow: an entry with NO tier declared is
+ * judged the old way (a held entry needs evidence_url). That keeps this from
+ * becoming a flag day across a register that predates it, while any entry that
+ * opts into a tier is held to it.
+ */
+function v12EvidenceTier(reg: Register) {
+  const groups: Array<[string, Array<{ id: string; status: string; evidence_url?: string | null }>]> = [
+    ['registrations', reg.registrations],
+    ['certifications', reg.certifications],
+    ['memberships', reg.memberships],
+  ];
+  for (const [name, list] of groups) {
+    list.forEach((c, i) => {
+      const at = `${name}[${i}] (${c.id})`;
+      const tier = (c as { evidence_tier?: string }).evidence_tier;
+      const docRef = (c as { document_ref?: string }).document_ref;
+      if (tier === 'document_on_request') {
+        if (c.status !== 'held') {
+          v('V12', `${at}.evidence_tier`, 'document_on_request describes how a HELD claim is backed; it means nothing on an unheld entry');
+        }
+        if (!docRef || docRef.trim().length < 12) {
+          v('V12', `${at}.document_ref`, 'document_on_request requires document_ref naming the document');
+        } else if (!/\b(19|20)\d{2}-\d{2}-\d{2}\b/.test(docRef)) {
+          v('V12', `${at}.document_ref`, `must carry the document's DATE as YYYY-MM-DD — "${docRef}" names a document but not when it was issued, and an undated reference cannot be checked`);
+        }
+      } else if (tier === 'public_registry') {
+        if (!c.evidence_url) {
+          v('V12', `${at}.evidence_url`, 'public_registry claims the evidence is openable by anyone, so a URL is mandatory');
+        }
+      } else if (c.status === 'held' && !c.evidence_url) {
+        v('V12', `${at}.evidence_tier`, 'a held credential needs either a public evidence_url or an explicit evidence_tier: document_on_request with a dated document_ref');
+      }
+    });
+  }
+}
+
 function v11HumanVerification(r: Register) {
   const all: Array<{ at: string; e: { machine_checkable?: boolean; last_human_verified?: string; status: string } }> = [
     ...r.certifications.map((e, i) => ({ at: `certifications[${i}] (${e.id})`, e })),
@@ -324,6 +421,7 @@ if (violations.length === 0) {
   v4v5Expiry(register);
   v6v10Marks(register);
   v11HumanVerification(register);
+  v12EvidenceTier(register);
   v9Determinism(register);
 }
 

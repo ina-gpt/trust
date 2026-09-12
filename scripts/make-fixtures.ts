@@ -128,6 +128,59 @@ function emit(name: string, why: string, r: Register) {
   emit('n14-mark-without-permission-evidence.yaml', 'V10: evidence that is only whitespace is no evidence; V10 trims before measuring.', r);
 }
 
+/* n18 — V10: a natural person as grantor */
+{
+  const r = clone();
+  // The organisation allowlist had two DEAD entries until 2026-09-12 (`\be\.V\.\b`
+  // could never match after a literal dot; `Verband` was case-sensitive so it
+  // missed "Bundesverband"). Repairing it widened what passes, so this fixture
+  // pins what must still FAIL — otherwise the repair could quietly have turned
+  // the rule off.
+  r.marks[1]!.grantor = 'Amaya Garmendia';
+  emit('n18-grantor-is-a-person.yaml', 'V10: a natural person may not be the recorded grantor of a public permission (R8).', r);
+}
+
+/* n19 — V10: the organisation allowlist must not be a blanket pass */
+{
+  const r = clone();
+  // A person's name with an organisational WORD in it is still a person.
+  r.marks[1]!.grantor = 'Jane Doe Institut';
+  emit('n19-person-with-org-word.yaml', 'V10: "Institut" appended to a personal name must not launder it into an organisation.', r);
+}
+
+/* n20 — V12: document_on_request without a DATE in the reference */
+{
+  const r = clone();
+  const m = r.memberships.find((x) => x.id === 'ki-bundesverband')!;
+  m.status = 'held';
+  m.evidence_tier = 'document_on_request';
+  m.document_ref = 'KI Bundesverband Aufnahmebestaetigung';   // named, but undated
+  emit('n20-document-ref-undated.yaml', 'V12: an undated document reference cannot be checked; document_on_request requires the date.', r);
+}
+
+/* n21 — V12: held, no public URL, no declared tier */
+{
+  const r = clone();
+  const m = r.memberships.find((x) => x.id === 'ki-bundesverband')!;
+  m.status = 'held';
+  delete m.evidence_url;
+  emit('n21-held-without-url-or-tier.yaml', 'V12: a held credential must name HOW it is backed — a public URL or a dated document.', r);
+}
+
+/* n22 — V12: public_registry is a promise that a URL exists */
+{
+  const r = clone();
+  // A MEMBERSHIP, because `registrations.evidence_url` is schema-REQUIRED:
+  // deleting it fails V1 and the fixture never reaches V12, certifying a rule
+  // it did not exercise. ki-bundesverband's evidence_url is nullable today,
+  // which is exactly the state this rule exists to judge.
+  const c = r.memberships.find((x) => x.id === 'ki-bundesverband')!;
+  c.status = 'held';
+  c.evidence_tier = 'public_registry';
+  c.evidence_url = null;
+  emit('n22-public-registry-without-url.yaml', 'V12: public_registry claims anyone can open the evidence, so the URL is mandatory.', r);
+}
+
 /* n16 — V11: blocked evidence link with no human verification */
 {
   const r = clone();
@@ -149,4 +202,4 @@ function emit(name: string, why: string, r: Register) {
   emit('n17-human-verify-expired.yaml', 'V11: a confirmation 181 days old has expired; the limit is 180.', r);
 }
 
-process.stdout.write('make-fixtures: wrote 12 fixture(s) derived from the real register\n');
+process.stdout.write('make-fixtures: wrote 17 fixture(s) derived from the real register\n');

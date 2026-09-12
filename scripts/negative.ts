@@ -36,6 +36,15 @@ const CASES: Case[] = [
   { fixture: 'n14-mark-without-permission-evidence.yaml', expectRule: 'V10', description: 'mark with no permission evidence' },
   { fixture: 'n16-blocked-without-human-verify.yaml', expectRule: 'V11', description: 'blocked link with no human verification' },
   { fixture: 'n17-human-verify-expired.yaml', expectRule: 'V11', description: 'human verification 181 days old' },
+  // Registered 2026-09-12 together with the fixtures themselves. make-fixtures
+  // WRITES a fixture; this list is what RUNS it, and the two had to be edited
+  // together — a fixture generated but absent here is a dead fixture, green by
+  // never being executed.
+  { fixture: 'n18-grantor-is-a-person.yaml', expectRule: 'V10', description: 'a natural person recorded as the grantor (R8)' },
+  { fixture: 'n19-person-with-org-word.yaml', expectRule: 'V10', description: 'an org word appended to a personal name must not launder it' },
+  { fixture: 'n20-document-ref-undated.yaml', expectRule: 'V12', description: 'document_on_request whose reference carries no date' },
+  { fixture: 'n21-held-without-url-or-tier.yaml', expectRule: 'V12', description: 'held with neither a public URL nor a declared evidence tier' },
+  { fixture: 'n22-public-registry-without-url.yaml', expectRule: 'V12', description: 'public_registry without the URL it promises' },
 ];
 
 let failures = 0;

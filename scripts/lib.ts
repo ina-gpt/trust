@@ -21,6 +21,23 @@ export const FUNDSTELLE_URL = 'https://www.tuvsud.com/ms-zert';
 
 export type Status = 'held' | 'in_progress' | 'applied' | 'verification_pending';
 
+/**
+ * HOW a `held` claim is backed.
+ *
+ *   public_registry     — evidence_url is a primary source anyone can open and
+ *                         read the identifier in. The strongest tier, and the
+ *                         only one a stranger can verify unaided.
+ *   document_on_request — the evidence is a named, DATED document held
+ *                         privately and produced on request. Legitimate for a
+ *                         membership whose directory entry is not live yet.
+ *
+ * The tier does not soften anything: a `held` credential must satisfy ONE of
+ * the two, and a document_on_request entry without a dated document_ref is a
+ * validation failure, not a softer pass. The date is the load-bearing part —
+ * "we have a letter somewhere" is not a reference.
+ */
+export type EvidenceTier = 'public_registry' | 'document_on_request';
+
 export interface Organization {
   legal_name: string;
   platform_name: string;
@@ -34,6 +51,8 @@ export interface Organization {
 }
 
 export interface Registration {
+  evidence_tier?: EvidenceTier;
+  document_ref?: string;
   machine_checkable?: boolean;
   machine_checkable_reason?: string;
   last_human_verified?: string;
@@ -47,6 +66,8 @@ export interface Registration {
 }
 
 export interface Certification {
+  evidence_tier?: EvidenceTier;
+  document_ref?: string;
   id: string;
   name: string;
   status: Status;
@@ -72,6 +93,8 @@ export interface Certification {
 }
 
 export interface Membership {
+  evidence_tier?: EvidenceTier;
+  document_ref?: string;
   machine_checkable?: boolean;
   machine_checkable_reason?: string;
   last_human_verified?: string;

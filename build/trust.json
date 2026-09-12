@@ -1,6 +1,6 @@
 {
   "$schema": "https://github.com/ina-gpt/trust/schema/credentials.schema.json",
-  "generated_from_commit": "bbdc27b2cb04ff1793f74388a2d6f55ad095e331",
+  "generated_from_commit": "c0cce881057695d5aaea97e31ad7a3cba1539295",
   "organization": {
     "legal_name": "INA GPT GmbH",
     "platform_name": "INA GPT",
@@ -212,6 +212,20 @@
       "source_url": "https://www.tuvsud.com/ms-zert",
       "surfaces": [
         "site_footer"
+      ]
+    },
+    {
+      "id": "startup-verband-member",
+      "display_name": "Bundesverband Deutsche Startups member badge",
+      "credential_ref": "startup-verband",
+      "file": "logos/startup-verband-mitglied-im.png",
+      "sha256": "8134b3f421ef3acbe78111f47a6a682fb90a71f08dcda19538f041a48af52236",
+      "grantor": "Bundesverband Deutsche Startups e.V.",
+      "permission_date": "2026-09-12",
+      "source_url": "https://startupverband.de/fileadmin/startupverband/mediaarchiv/Logos_Mitglied_im_Startup-Verband.zip",
+      "surfaces": [
+        "site_footer",
+        "trust_repo"
       ]
     }
   ]

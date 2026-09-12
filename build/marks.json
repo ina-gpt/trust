@@ -1,6 +1,6 @@
 {
   "$comment": "GENERATED from data/credentials.yaml. Do not edit. Only marks whose credential is HELD appear here.",
-  "generated_from_commit": "bbdc27b2cb04ff1793f74388a2d6f55ad095e331",
+  "generated_from_commit": "c0cce881057695d5aaea97e31ad7a3cba1539295",
   "fundstelle": {
     "en": "https://www.tuvsud.com/ms-cert",
     "de": "https://www.tuvsud.com/ms-zert"
@@ -72,6 +72,23 @@
         "no_recolour": true,
         "preserve_aspect_ratio": true,
         "constraints": "Full colour only; never inverted, greyscaled, cropped or distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must accompany the mark as a real anchor, not only as text inside the artwork."
+      }
+    },
+    {
+      "id": "startup-verband-member",
+      "file": "logos/startup-verband-mitglied-im.png",
+      "site_path": "/badges/startup-verband-logo.png",
+      "alt": "Bundesverband Deutsche Startups member badge",
+      "credential_ref": "startup-verband",
+      "credential_name": "Bundesverband Deutsche Startups e.V.",
+      "target_url": "https://startupverband.de/",
+      "locale": null,
+      "fundstelle_required": false,
+      "fundstelle_url": null,
+      "rendering": {
+        "no_recolour": true,
+        "preserve_aspect_ratio": true,
+        "constraints": "Use as delivered. No recolour, no distortion, no crop. Preserve the intrinsic aspect ratio. The colour variant is used; the archive also ships white and black variants."
       }
     }
   ]

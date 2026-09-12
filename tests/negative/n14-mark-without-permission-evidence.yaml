@@ -208,3 +208,37 @@ marks:
       accompany the mark as a real anchor, not only as text inside the artwork.
     surfaces:
       - site_footer
+  - id: startup-verband-member
+    display_name: Bundesverband Deutsche Startups member badge
+    credential_ref: startup-verband
+    file: logos/startup-verband-mitglied-im.png
+    site_path: /badges/startup-verband-logo.png
+    sha256: 8134b3f421ef3acbe78111f47a6a682fb90a71f08dcda19538f041a48af52236
+    grantor: Bundesverband Deutsche Startups e.V.
+    grantor_role: The association itself, as publisher of the member badge set
+    permission_date: 2026-09-12
+    permission_evidence: "PUBLISHED, not corresponded. The association publishes a
+      member badge set for members to display, in its own public media library
+      (https://startupverband.de/presse/mediathek/), as the download item
+      \"Logos 'Mitglied im Startup-Verband'\" ->
+      https://startupverband.de/fileadmin/startupverband/mediaarchiv/Logos_Mitg\
+      lied_im_Startup-Verband.zip Retrieved 2026-09-12: HTTP 200,
+      application/zip, 2698046 bytes, sha256 f1711a9add3d0789... The file
+      displayed here is BYTE-IDENTICAL to \"Logos Mitglied im
+      Startup-Verband/Farbe/LogoMitgliedIm.png\" inside that archive (sha256
+      8134b3f421ef3acb... on both sides), so the displayed bytes are the
+      association's own published member badge rather than a copy of unknown
+      origin. Measured limitation, stated rather than glossed: the badge is
+      PUBLISHED for member use, but neither the media library,
+      /mitglied-werden/, /members/mitglied-werden/, the press kit nor the
+      Members Hub Nutzungsbedingungen state usage TERMS - all four were read on
+      2026-09-12 and none carries a logo clause. The permission rests on the act
+      of publication for members, and the constraints below are therefore ours
+      by default, not the grantor's by instruction."
+    source_url: https://startupverband.de/fileadmin/startupverband/mediaarchiv/Logos_Mitglied_im_Startup-Verband.zip
+    usage_constraints: Use as delivered. No recolour, no distortion, no crop.
+      Preserve the intrinsic aspect ratio. The colour variant is used; the
+      archive also ships white and black variants.
+    surfaces:
+      - site_footer
+      - trust_repo
