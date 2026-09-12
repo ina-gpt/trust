@@ -1,6 +1,6 @@
 {
   "$schema": "https://github.com/ina-gpt/trust/schema/credentials.schema.json",
-  "generated_from_commit": "5441c3453e3d3e48fb41605be4b63d7de7059478",
+  "generated_from_commit": "910200d3ffa7b691796720f8d60c402d82f76eb4",
   "organization": {
     "legal_name": "INA GPT GmbH",
     "platform_name": "INA GPT",

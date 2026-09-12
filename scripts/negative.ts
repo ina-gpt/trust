@@ -176,21 +176,35 @@ process.stdout.write('\n=== n09b: the REAL digest set bites (local only — need
 }
 
 /* --------------------------------------------------------- drift fixture -- */
-process.stdout.write('\n=== n10: mutated build/ must be caught by the drift check ===\n');
+/**
+ * n10 — the drift check must catch a COMMITTED build/ that no longer matches
+ * the register.
+ *
+ * THE FIXTURE HAD TO CHANGE WITH THE GATE. It used to mutate build/trust.json,
+ * which worked against the old drift check because that one compared the
+ * working tree. The new check reads the COMMITTED output via `git show`, so
+ * mutating the working tree proves nothing — and this fixture correctly went
+ * red the moment the gate was fixed, which is what a fixture is for.
+ *
+ * The sabotage is now the real failure mode: edit data/credentials.yaml and
+ * forget to regenerate. That is the mistake a human actually makes.
+ */
+process.stdout.write('\n=== n10: a register edit without a regenerate must be caught ===\n');
 {
-  const target = resolve(REPO, 'build/trust.json');
-  const original = existsSync(target) ? (await import('node:fs')).readFileSync(target, 'utf8') : null;
-  if (original === null) {
-    record('n10-nondeterministic-output', false, 'build/trust.json not present — run make trust first');
-  } else {
-    try {
-      writeFileSync(target, `${original}\n// mutated by the drift fixture\n`, 'utf8');
-      const p = spawnSync('make', ['drift'], { cwd: REPO, encoding: 'utf8', env: process.env });
-      record('n10-nondeterministic-output', p.status !== 0,
-        `make drift exit=${p.status} (want non-zero on a mutated build/)`);
-    } finally {
-      writeFileSync(target, original, 'utf8');
-    }
+  const { readFileSync: rd, writeFileSync: w } = await import('node:fs');
+  const dataFile = DATA_PATH;
+  const original = rd(dataFile, 'utf8');
+  try {
+    w(dataFile, original.replace('platform_name: "INA GPT"', 'platform_name: "INA GPT DRIFT FIXTURE"'), 'utf8');
+    const p = spawnSync('make', ['drift'], { cwd: REPO, encoding: 'utf8', env: process.env });
+    const out = `${p.stdout ?? ''}${p.stderr ?? ''}`;
+    record('n10-committed-output-is-stale', p.status !== 0 && /differs from a fresh render/.test(out),
+      `make drift exit=${p.status} (want non-zero) named_a_stale_file=${/differs from a fresh render/.test(out)}`);
+  } finally {
+    // Restore the register AND the generated output, unconditionally. A fixture
+    // that leaves either mutated turns every later run into a false red.
+    w(dataFile, original, 'utf8');
+    spawnSync('npx', ['tsx', 'scripts/generate.ts'], { cwd: REPO, encoding: 'utf8', env: process.env });
   }
 }
 

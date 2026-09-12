@@ -52,9 +52,23 @@ const reg: Register = loadRegister();
 process.stdout.write('=== published trust.json ===\n');
 const live = await get(`${SITE}/trust.json`);
 assert(live.status === 200, 'GET /trust.json', `http=${live.status}`);
-let published: Register & { fundstelle?: string } = {} as never;
+/**
+ * The fetched document is UNTRUSTED INPUT, not our Register type. Typing it as
+ * Register would have the compiler vouch for a shape nobody validated — and
+ * the whole point of this script is to check the published bytes rather than
+ * assume they match what we meant to publish.
+ */
+type PublishedEntry = Record<string, unknown> & { id?: string; status?: string };
+interface Published {
+  certifications?: PublishedEntry[];
+  memberships?: PublishedEntry[];
+  registrations?: PublishedEntry[];
+  fundstelle?: string;
+  generated_from_commit?: string;
+}
+let published: Published = {};
 try {
-  published = JSON.parse(live.text);
+  published = JSON.parse(live.text) as Published;
   assert(true, 'trust.json parses as JSON');
 } catch {
   assert(false, 'trust.json parses as JSON');
@@ -66,7 +80,7 @@ process.stdout.write('claim | rendered | identifier | evidence_url | http\n');
 
 const heldRows: Array<{ claim: string; identifier: string; url: string; status: number | string }> = [];
 for (const kind of ['certifications', 'memberships', 'registrations'] as const) {
-  for (const e of (published[kind] ?? []) as Array<Record<string, unknown>>) {
+  for (const e of published[kind] ?? []) {
     if (e.status !== 'held') continue;
     const url = (e.evidence_url as string) ?? '';
     const probe = url ? await get(url) : { status: 'none', text: '' };
@@ -89,20 +103,20 @@ assert(heldRows.length === 8, 'exactly 8 held claims published', `found ${heldRo
 /* --------------------------------- 3. no held claim without an identifier -- */
 process.stdout.write('\n=== R1: nothing renders as held without a verifiable anchor ===\n');
 for (const kind of ['certifications', 'registrations'] as const) {
-  for (const e of (published[kind] ?? []) as Array<Record<string, unknown>>) {
+  for (const e of published[kind] ?? []) {
     if (e.status !== 'held') continue;
     assert(Boolean(e.identifier), `${kind}/${e.id} carries an identifier`);
     assert(Boolean(e.evidence_url), `${kind}/${e.id} carries a primary-source link`);
   }
 }
-for (const e of (published.memberships ?? []) as Array<Record<string, unknown>>) {
+for (const e of published.memberships ?? []) {
   if (e.status !== 'held') continue;
   assert(Boolean(e.identifier || e.evidence_url), `memberships/${e.id} carries an identifier or a directory link`);
 }
 
 /* --------------------------------------- 4. ISO 42001 everywhere it shows -- */
 process.stdout.write('\n=== R3: ISO 42001 renders as NOT held on every surface ===\n');
-const iso42 = ((published.certifications ?? []) as Array<Record<string, unknown>>).find((c) => c.id === 'iso-42001');
+const iso42 = (published.certifications ?? []).find((c) => c.id === 'iso-42001');
 assert(iso42?.status === 'in_progress', 'trust.json: iso-42001 status is in_progress', `got ${iso42?.status}`);
 
 const surfaces: Array<{ label: string; text: string }> = [
@@ -126,7 +140,7 @@ for (const s of surfaces) {
 
 /* ------------------------------------------------- 5. R4 Fundstelle duty --- */
 process.stdout.write('\n=== R4: the Fundstelle link accompanies the mark or the number ===\n');
-const certNumber = (((published.certifications ?? []) as Array<Record<string, unknown>>)
+const certNumber = ((published.certifications ?? [])
   .find((c) => c.id === 'iso-27001')?.identifier as string) ?? '';
 for (const s of surfaces) {
   if (!s.text) continue;
