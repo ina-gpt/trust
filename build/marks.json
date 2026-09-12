@@ -1,6 +1,6 @@
 {
   "$comment": "GENERATED from data/credentials.yaml. Do not edit. Only marks whose credential is HELD appear here.",
-  "generated_from_commit": "96420ba1eed6c24ae07bcfdc54e921db828cb070",
+  "generated_from_commit": "27a13385846afea607bbb250aa49c9fd012f9685",
   "fundstelle": {
     "en": "https://www.tuvsud.com/ms-cert",
     "de": "https://www.tuvsud.com/ms-zert"

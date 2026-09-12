@@ -87,4 +87,66 @@ function emit(name: string, why: string, r: Register) {
   emit('n07-private-contact-leaked.yaml', 'V7: a private street address and a personal mailbox must never reach a public file.', r);
 }
 
-process.stdout.write('make-fixtures: wrote 7 fixture(s) derived from the real register\n');
+
+/* n12 — V10: a mark whose credential is not held */
+{
+  const r = clone();
+  // KI Bundesverband is verification_pending. Declaring a mark for it is the
+  // exact defect this rule exists to catch: the live footer displayed that
+  // logotype while the register carried the membership as unverified.
+  r.marks.push({
+    id: 'kibv-mark',
+    display_name: 'KI Bundesverband logotype',
+    credential_ref: 'ki-bundesverband',
+    file: 'logos/adra-logotype.png',
+    sha256: '227d5dc739473f8649ee0d16ede2ba165870bc25fbb8aa9f9705e233c7b46600',
+    grantor: 'KI Bundesverband e.V.',
+    grantor_role: 'Membership office',
+    permission_date: '2026-07-07',
+    permission_evidence: 'Fixture only — no such permission exists. This fixture must FAIL.',
+    source_url: 'https://ki-verband.de/',
+    usage_constraints: 'Fixture only.',
+    surfaces: ['site_footer'],
+  });
+  emit('n12-mark-credential-not-held.yaml', 'V10: a mark may not display a credential whose status is not held.', r);
+}
+
+/* n13 — V10: recorded digest does not match the file */
+{
+  const r = clone();
+  r.marks[1]!.sha256 = '0'.repeat(64);
+  emit('n13-mark-sha256-mismatch.yaml', 'V10: the permission record names a digest; different bytes must fail.', r);
+}
+
+/* n14 — V10: no permission evidence */
+{
+  const r = clone();
+  // Whitespace-padded so it satisfies the schema's minLength and reaches V10,
+  // which trims before measuring. A short value stops at V1 and would prove
+  // the schema bites rather than that V10 does.
+  r.marks[1]!.permission_evidence = ' '.repeat(40);
+  emit('n14-mark-without-permission-evidence.yaml', 'V10: evidence that is only whitespace is no evidence; V10 trims before measuring.', r);
+}
+
+/* n16 — V11: blocked evidence link with no human verification */
+{
+  const r = clone();
+  // The register is ALREADY in this state for two entries, so the fixture
+  // pins the rule rather than inventing a condition.
+  const c = r.certifications.find((x) => x.id === 'iso-27001')!;
+  c.machine_checkable = false;
+  delete c.last_human_verified;
+  emit('n16-blocked-without-human-verify.yaml', 'V11: an un-machine-checkable link needs a dated human confirmation.', r);
+}
+
+/* n17 — V11: human verification older than the 180-day limit */
+{
+  const r = clone();
+  const c = r.certifications.find((x) => x.id === 'iso-27001')!;
+  c.machine_checkable = false;
+  c.last_human_verified = addDaysUTC(todayUTC(), -181);
+  c.human_verified_by = 'compliance';
+  emit('n17-human-verify-expired.yaml', 'V11: a confirmation 181 days old has expired; the limit is 180.', r);
+}
+
+process.stdout.write('make-fixtures: wrote 12 fixture(s) derived from the real register\n');

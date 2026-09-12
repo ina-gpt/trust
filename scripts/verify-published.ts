@@ -63,7 +63,7 @@ interface Published {
   certifications?: PublishedEntry[];
   memberships?: PublishedEntry[];
   registrations?: PublishedEntry[];
-  fundstelle?: string;
+  fundstelle?: string | Record<string, string>;
   generated_from_commit?: string;
 }
 let published: Published = {};
@@ -142,11 +142,28 @@ for (const s of surfaces) {
 process.stdout.write('\n=== R4: the Fundstelle link accompanies the mark or the number ===\n');
 const certNumber = ((published.certifications ?? [])
   .find((c) => c.id === 'iso-27001')?.identifier as string) ?? '';
+/**
+ * Accept EITHER locale's Fundstelle, read from the published document rather
+ * than from a constant in this file.
+ *
+ * This assertion hardcoded the German URL and went red the moment the register
+ * became locale-aware — the auditor lagging the thing it audits. Reading the
+ * value the world actually published is the only version that cannot drift.
+ */
+const acceptedFundstelle: string[] = (() => {
+  const f = published.fundstelle;
+  if (typeof f === 'string') return [f];
+  if (f && typeof f === 'object') return Object.values(f as Record<string, string>);
+  return [FUNDSTELLE_URL];
+})();
+process.stdout.write(`      accepted Fundstelle: ${acceptedFundstelle.join(' | ')}\n`);
+
 for (const s of surfaces) {
   if (!s.text) continue;
   const mentions = (certNumber && s.text.includes(certNumber)) || /T(?:Ü|U)V\s*S(?:Ü|U)D/i.test(s.text);
   if (!mentions) { assert(true, `${s.label}: does not mention the mark or the number`); continue; }
-  assert(s.text.includes(FUNDSTELLE_URL), `${s.label}: carries the Fundstelle link`);
+  const hit = acceptedFundstelle.find((u) => s.text.includes(u));
+  assert(Boolean(hit), `${s.label}: carries a Fundstelle link`, hit ?? 'none of the accepted URLs');
 }
 
 /* ------------------------------------------------------ 6. the site files -- */

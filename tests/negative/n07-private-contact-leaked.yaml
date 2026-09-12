@@ -30,6 +30,9 @@ registrations:
     issuer: Dun & Bradstreet
     evidence_url: https://www.upik.de/
     status: held
+    machine_checkable: false
+    machine_checkable_reason: upik.de returns HTTP 403 to automated requests from a
+      datacenter address. The link refuses robots rather than being broken.
 certifications:
   - id: iso-27001
     name: ISO/IEC 27001:2022 — Information Security Management System
@@ -41,8 +44,15 @@ certifications:
     valid_from: 2026-08-10
     valid_to: 2029-08-09
     statement_of_applicability: v1.7 (2026-08-04)
-    evidence_url: https://www.tuvsud.com/ms-zert
+    evidence_url: https://www.tuvsud.com/ms-cert
     fundstelle_required: true
+    fundstelle_url:
+      en: https://www.tuvsud.com/ms-cert
+      de: https://www.tuvsud.com/ms-zert
+    machine_checkable: false
+    machine_checkable_reason: Every tuvsud.com URL returns HTTP 403 to automated
+      requests from a datacenter address, including with a browser user-agent.
+      The link is not broken; it refuses robots. A human must confirm it.
   - id: iso-42001
     name: ISO/IEC 42001:2023 — AI Management System
     status: in_progress
@@ -65,7 +75,6 @@ memberships:
     category: Industry — Start-up
     since: 2026-09-10
     evidence_url: https://adr-association.eu/members/
-    logo: logos/adra-logotype.png
   - id: ihk-berlin
     name: IHK Berlin
     status: held
@@ -126,3 +135,78 @@ contact:
   hiring_url: https://inagpt.com/careers
   canonical_url: https://inagpt.com/.well-known/security.txt
   preferred_languages: de, en, fa
+marks:
+  - id: gaia-x-member
+    display_name: Gaia-X member logo
+    credential_ref: gaia-x
+    file: logos/gaia-x-member.svg
+    site_path: /badges/gaia-x-logo.svg
+    sha256: 2f6323f564059b78772d8312e966ca9184fef685018315419dfb81d80dba7509
+    grantor: Gaia-X European Association for Data and Cloud AISBL
+    grantor_role: Membership onboarding
+    permission_date: 2026-08-10
+    permission_evidence: Official member logo set received through Gaia-X membership
+      onboarding on 2026-08-10. The association's Members Platform Logo Usage
+      Guide governs use.
+    source_url: https://gaia-x.eu/who-we-are/members/
+    usage_constraints: Preserve clear space. Do not recolour, distort or crop. Size
+      by height with width:auto so the intrinsic 223.9x155.9 ratio is never
+      rounded away.
+    surfaces:
+      - site_footer
+      - trust_repo
+      - org_profile
+  - id: adra-member
+    display_name: Adra member logotype
+    credential_ref: adra
+    file: logos/adra-logotype.png
+    site_path: /badges/adra-logo.png
+    sha256: 227d5dc739473f8649ee0d16ede2ba165870bc25fbb8aa9f9705e233c7b46600
+    grantor: Adra — AI, Data and Robotics Association AISBL
+    grantor_role: Membership and policy office
+    permission_date: 2026-09-10
+    permission_evidence: Written permission to display the logo on inagpt.com,
+      granted by the Adra Association membership office on 2026-09-10. Evidence
+      held in the private register.
+    source_url: https://adr-association.eu/sites/default/files/2024-07/RGB_Adra-logotype_CoL_1.png
+    usage_constraints: Use as delivered. No recolour, distortion or crop. Preserve
+      aspect ratio (500x300) and clear space. Maximum rendered width 250 CSS px.
+    surfaces:
+      - site_footer
+      - trust_repo
+  - id: iso-27001-mark-en
+    display_name: ISO/IEC 27001:2022 certification mark (English)
+    credential_ref: iso-27001
+    file: logos/tuv-iso27001-badge-en.png
+    site_path: /badges/tuv-iso27001-badge-en.png
+    sha256: 4066c5a7d2cc9cb09dfda02432bacfb1b1dae6ecba8853c5455ad260ed1bfb70
+    grantor: TÜV SÜD Management Service GmbH
+    grantor_role: Certification body mark download centre
+    permission_date: 2026-08-10
+    permission_evidence: Downloaded from the certification body's official mark
+      download centre against certificate 12 310 71178 TMS on 2026-08-10. The
+      artwork itself carries the Fundstelle www.tuvsud.com/ms-cert.
+    source_url: https://www.tuvsud.com/ms-cert
+    usage_constraints: Full colour only; never inverted, greyscaled, cropped or
+      distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must
+      accompany the mark as a real anchor, not only as text inside the artwork.
+    surfaces:
+      - site_footer
+  - id: iso-27001-mark-de
+    display_name: ISO/IEC 27001:2022 Prüfzeichen (German)
+    credential_ref: iso-27001
+    file: logos/tuv-iso27001-badge-de.png
+    site_path: /badges/tuv-iso27001-badge-de.png
+    sha256: 36ba9610fb74a6b045e186d6432acba044c9c50db3366fd6c7d9da63c79ca0cd
+    grantor: TÜV SÜD Management Service GmbH
+    grantor_role: Certification body mark download centre
+    permission_date: 2026-08-10
+    permission_evidence: Downloaded from the certification body's official mark
+      download centre against certificate 12 310 71178 TMS on 2026-08-10. The
+      artwork itself carries the Fundstelle www.tuvsud.com/ms-zert.
+    source_url: https://www.tuvsud.com/ms-zert
+    usage_constraints: Full colour only; never inverted, greyscaled, cropped or
+      distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must
+      accompany the mark as a real anchor, not only as text inside the artwork.
+    surfaces:
+      - site_footer

@@ -28,9 +28,14 @@ const CASES: Case[] = [
   { fixture: 'n02-held-without-evidence-url.yaml', expectRule: 'V2', description: 'held certification with no primary source' },
   { fixture: 'n03-iso42001-marked-held.yaml', expectRule: 'V3', description: 'ISO 42001 claimed as held' },
   { fixture: 'n04-expired-certificate.yaml', expectRule: 'V4', description: 'certificate whose validity has passed' },
-  { fixture: 'n05-logo-without-permission.yaml', expectRule: 'V6', description: 'logo with no permission block' },
-  { fixture: 'n06-logo-sha256-mismatch.yaml', expectRule: 'V6', description: 'permission record whose digest does not match the file' },
+  { fixture: 'n05-logo-without-permission.yaml', expectRule: 'V10', description: 'the superseded per-membership logo field is refused' },
+  { fixture: 'n06-logo-sha256-mismatch.yaml', expectRule: 'V10', description: 'the superseded per-membership logo field is refused' },
   { fixture: 'n07-private-contact-leaked.yaml', expectRule: 'V7', description: 'private contact data in the register' },
+  { fixture: 'n12-mark-credential-not-held.yaml', expectRule: 'V10', description: 'mark displaying a credential that is not held' },
+  { fixture: 'n13-mark-sha256-mismatch.yaml', expectRule: 'V10', description: 'mark whose digest does not match the file' },
+  { fixture: 'n14-mark-without-permission-evidence.yaml', expectRule: 'V10', description: 'mark with no permission evidence' },
+  { fixture: 'n16-blocked-without-human-verify.yaml', expectRule: 'V11', description: 'blocked link with no human verification' },
+  { fixture: 'n17-human-verify-expired.yaml', expectRule: 'V11', description: 'human verification 181 days old' },
 ];
 
 let failures = 0;
@@ -209,10 +214,29 @@ process.stdout.write('\n=== n10: a register edit without a regenerate must be ca
 }
 
 /* ------------------------------------------------------- positive case ---- */
-process.stdout.write('\n=== positive: the real register must PASS ===\n');
+/**
+ * The real register, with ONE knowingly-open item.
+ *
+ * V11 is deliberately red: two evidence links refuse automated requests from
+ * this address, and nobody has confirmed them by hand, so the register declines
+ * to call them verified. Asserting `exit === 0` here would force a choice
+ * between a green suite and an honest register.
+ *
+ * So the assertion is sharper than "it passes": the ONLY failures may be those
+ * two V11 items. That still catches everything a plain pass would — any new
+ * violation, in any rule, breaks it — while refusing to launder the open item
+ * into a green tick.
+ */
+process.stdout.write('\n=== positive: the real register has NO failures other than the known-open V11 ===\n');
 {
-  const { code } = runValidate(DATA_PATH);
-  record('positive-real-register', code === 0, `exit=${code} (want 0)`);
+  const { code, out } = runValidate(DATA_PATH);
+  const lines = out.split('\n').filter((l) => /^V[0-9]+\s/.test(l));
+  const onlyKnownV11 =
+    lines.length === 2 &&
+    lines.every((l) => l.startsWith('V11') && /last_human_verified/.test(l));
+  record('positive-real-register', code === 1 && onlyKnownV11,
+    `exit=${code} · ${lines.length} violation(s), all known-open V11: ${onlyKnownV11}`);
+  for (const l of lines) process.stdout.write(`      open: ${l}\n`);
 }
 
 process.stdout.write(
