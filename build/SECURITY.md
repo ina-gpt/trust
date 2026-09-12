@@ -46,6 +46,13 @@ de, en, fa
 
 The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-zert> (Fundstelle, § 5a UWG).
 
+## Verify our compliance claims
+
+This page states a security posture. Every certification and membership behind
+it carries an identifier and a link to the issuer's own record, in one canonical
+register: **[ina-gpt/trust](https://github.com/ina-gpt/trust)** ·
+machine-readable at <https://inagpt.com/trust.json>
+
 ## Contact
 
 **INA GPT GmbH**  

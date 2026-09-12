@@ -10,7 +10,7 @@ SHELL := /bin/bash
 
 NPX := npx --no-install
 
-.PHONY: trust check drift validate guard generate links negative fixtures denylist clean
+.PHONY: trust check drift validate guard generate links negative fixtures denylist verify install-site clean
 
 ## validate + guard + generate — the normal local loop
 trust: generate validate guard
@@ -54,6 +54,15 @@ drift:
 
 links:
 	@$(NPX) tsx scripts/check-links.ts
+
+## Independent audit: fetch the PUBLISHED surfaces and assert the claims.
+## Deliberately does not read build/ — that would only prove the generator
+## agrees with itself.
+verify:
+	@$(NPX) tsx scripts/verify-published.ts
+
+install-site:
+	@bash scripts/install-site.sh
 
 fixtures:
 	@$(NPX) tsx scripts/make-fixtures.ts

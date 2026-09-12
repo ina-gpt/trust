@@ -267,6 +267,13 @@ ${r.practices.filter((p) => ['isms', 'security-testing', 'gdpr'].includes(p.id))
 
 ${fundstelleNote()}
 
+## Verify our compliance claims
+
+This page states a security posture. Every certification and membership behind
+it carries an identifier and a link to the issuer's own record, in one canonical
+register: **[ina-gpt/trust](https://github.com/ina-gpt/trust)** ·
+machine-readable at <${r.organization.website}/trust.json>
+
 ## Contact
 
 ${contactBlock()}
