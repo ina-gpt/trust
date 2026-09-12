@@ -124,8 +124,15 @@ jobs:
           GH_TOKEN: ${{ secrets.TRUST_SYNC_TOKEN }}
         run: |
           set -euo pipefail
+          # NOT CONFIGURED and BROKEN are different, and must not share a colour.
+          #
+          # GITHUB_TOKEN cannot write to sibling repositories, so this job needs
+          # a PAT. Until one exists the job SKIPS with a loud notice rather than
+          # failing: a permanently red pipeline gets ignored, and then the day it
+          # goes red for a real reason nobody looks. Once the token IS present,
+          # any sync failure is fatal — because then it really is broken.
           if [ -z "${GH_TOKEN:-}" ]; then
-            echo "::error::TRUST_SYNC_TOKEN is not set — cannot write to sibling repositories."
-            exit 1
+            echo "::warning title=trust sync not configured::TRUST_SYNC_TOKEN is absent, so the generated surface was NOT synced to the sibling repositories. Add a PAT with contents:write on the ina-gpt public repos to enable it. Run scripts/sync.ts locally in the meantime."
+            exit 0
           fi
           npx tsx scripts/sync.ts --commit-sha="${GITHUB_SHA::7}"
