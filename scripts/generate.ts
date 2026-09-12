@@ -475,6 +475,45 @@ write('marks.json', JSON.stringify({
   }),
 }, null, 2));
 
+
+/* ----------------------------------------------------------- sources.json -- */
+/**
+ * The site's PUBLIC provenance file, generated from the same register.
+ *
+ * public/badges/SOURCES.json is served at inagpt.com/badges/SOURCES.json and is
+ * what the site's own membership-logos gate checks a displayed mark against.
+ * It was maintained by hand, which made it a THIRD register — and it promptly
+ * disagreed: it carried an entry for one mark while the trust register carried
+ * four. Generating it from `marks:` is the same fix applied to the footer.
+ *
+ * LICENCE FACTS ONLY. `grantor` here is an organisation; the individual who
+ * signed stays in the private register. The site's gate independently fails if
+ * a person's name or an email address appears in any publicly served
+ * provenance file, so this generator must never widen what it emits.
+ */
+write('sources.json', JSON.stringify({
+  _README: [
+    'GENERATED from ina-gpt/trust data/credentials.yaml. Do not edit.',
+    'Provenance and licence register for the third-party marks displayed on inagpt.com.',
+    'Served publicly at https://inagpt.com/badges/SOURCES.json, so it carries ONLY',
+    'licence facts fit to publish: never a natural person name, job title or email.',
+    'Who signed a permission is personal data with no lawful basis for publication;',
+    'that evidence lives in the private brand-mark register.',
+  ],
+  ...Object.fromEntries(footerMarks.map((m) => {
+    const base = m.site_path ? m.site_path.split('/').pop()! : m.file.split('/').pop()!;
+    return [base, {
+      organisation: m.grantor,
+      source_url: m.source_url,
+      sha256: m.sha256,
+      permission: `${m.permission_evidence} Granted ${m.permission_date}.`,
+      permission_date: m.permission_date,
+      usage_rules: m.usage_constraints,
+      credential_ref: m.credential_ref,
+    }];
+  })),
+}, null, 2));
+
 /* ---------------------------------------------------------- security.txt -- */
 
 const expires = addDaysUTC(todayUTC(), 365);
@@ -494,7 +533,7 @@ write('security.txt', [
 ].join('\n'));
 
 process.stdout.write(
-  `generate: wrote 8 file(s) to build/ — ` +
+  `generate: wrote 9 file(s) to build/ — ` +
     `${r.certifications.filter((x) => x.status === 'held').length + r.memberships.filter((x) => x.status === 'held').length + r.registrations.filter((x) => x.status === 'held').length} held, ` +
     `${r.certifications.filter((x) => x.status !== 'held').length + r.memberships.filter((x) => x.status !== 'held').length} not held\n`
 );

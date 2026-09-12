@@ -60,6 +60,11 @@ install_one "$SRC/security.txt" "$ROOT/.well-known/security.txt"
 # inside its own tree — a runtime fetch would make the footer depend on a
 # network call, and a build-time import makes an unsanctioned mark a build
 # failure instead of a live one.
+APP_SOURCES="${INA_APP_SOURCES:-/root/inagpt/public/badges/SOURCES.json}"
+if [ -d "$(dirname "$APP_SOURCES")" ]; then
+  install_one "$SRC/sources.json" "$APP_SOURCES"
+fi
+
 APP_MARKS="${INA_APP_MARKS:-/root/inagpt/src/lib/trust/marks.generated.json}"
 if [ -d "$(dirname "$APP_MARKS")" ]; then
   install_one "$SRC/marks.json" "$APP_MARKS"

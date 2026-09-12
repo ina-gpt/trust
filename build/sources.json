@@ -1,0 +1,46 @@
+{
+  "_README": [
+    "GENERATED from ina-gpt/trust data/credentials.yaml. Do not edit.",
+    "Provenance and licence register for the third-party marks displayed on inagpt.com.",
+    "Served publicly at https://inagpt.com/badges/SOURCES.json, so it carries ONLY",
+    "licence facts fit to publish: never a natural person name, job title or email.",
+    "Who signed a permission is personal data with no lawful basis for publication;",
+    "that evidence lives in the private brand-mark register."
+  ],
+  "gaia-x-logo.svg": {
+    "organisation": "Gaia-X European Association for Data and Cloud AISBL",
+    "source_url": "https://gaia-x.eu/who-we-are/members/",
+    "sha256": "2f6323f564059b78772d8312e966ca9184fef685018315419dfb81d80dba7509",
+    "permission": "Official member logo set received through Gaia-X membership onboarding on 2026-08-10. The association's Members Platform Logo Usage Guide governs use. Granted 2026-08-10.",
+    "permission_date": "2026-08-10",
+    "usage_rules": "Preserve clear space. Do not recolour, distort or crop. Size by height with width:auto so the intrinsic 223.9x155.9 ratio is never rounded away.",
+    "credential_ref": "gaia-x"
+  },
+  "adra-logo.png": {
+    "organisation": "Adra — AI, Data and Robotics Association AISBL",
+    "source_url": "https://adr-association.eu/sites/default/files/2024-07/RGB_Adra-logotype_CoL_1.png",
+    "sha256": "227d5dc739473f8649ee0d16ede2ba165870bc25fbb8aa9f9705e233c7b46600",
+    "permission": "Written permission to display the logo on inagpt.com, granted by the Adra Association membership office on 2026-09-10. Evidence held in the private register. Granted 2026-09-10.",
+    "permission_date": "2026-09-10",
+    "usage_rules": "Use as delivered. No recolour, distortion or crop. Preserve aspect ratio (500x300) and clear space. Maximum rendered width 250 CSS px.",
+    "credential_ref": "adra"
+  },
+  "tuv-iso27001-badge-en.png": {
+    "organisation": "TÜV SÜD Management Service GmbH",
+    "source_url": "https://www.tuvsud.com/ms-cert",
+    "sha256": "4066c5a7d2cc9cb09dfda02432bacfb1b1dae6ecba8853c5455ad260ed1bfb70",
+    "permission": "Downloaded from the certification body's official mark download centre against certificate 12 310 71178 TMS on 2026-08-10. The artwork itself carries the Fundstelle www.tuvsud.com/ms-cert. Granted 2026-08-10.",
+    "permission_date": "2026-08-10",
+    "usage_rules": "Full colour only; never inverted, greyscaled, cropped or distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must accompany the mark as a real anchor, not only as text inside the artwork.",
+    "credential_ref": "iso-27001"
+  },
+  "tuv-iso27001-badge-de.png": {
+    "organisation": "TÜV SÜD Management Service GmbH",
+    "source_url": "https://www.tuvsud.com/ms-zert",
+    "sha256": "36ba9610fb74a6b045e186d6432acba044c9c50db3366fd6c7d9da63c79ca0cd",
+    "permission": "Downloaded from the certification body's official mark download centre against certificate 12 310 71178 TMS on 2026-08-10. The artwork itself carries the Fundstelle www.tuvsud.com/ms-zert. Granted 2026-08-10.",
+    "permission_date": "2026-08-10",
+    "usage_rules": "Full colour only; never inverted, greyscaled, cropped or distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must accompany the mark as a real anchor, not only as text inside the artwork.",
+    "credential_ref": "iso-27001"
+  }
+}
