@@ -1,0 +1,78 @@
+{
+  "$comment": "GENERATED from data/credentials.yaml. Do not edit. Only marks whose credential is HELD appear here.",
+  "generated_from_commit": "96420ba1eed6c24ae07bcfdc54e921db828cb070",
+  "fundstelle": {
+    "en": "https://www.tuvsud.com/ms-cert",
+    "de": "https://www.tuvsud.com/ms-zert"
+  },
+  "marks": [
+    {
+      "id": "gaia-x-member",
+      "file": "logos/gaia-x-member.svg",
+      "site_path": "/badges/gaia-x-logo.svg",
+      "alt": "Gaia-X member logo",
+      "credential_ref": "gaia-x",
+      "credential_name": "Gaia-X European Association for Data and Cloud AISBL",
+      "target_url": "https://gaia-x.eu/who-we-are/members/",
+      "locale": null,
+      "fundstelle_required": false,
+      "fundstelle_url": null,
+      "rendering": {
+        "no_recolour": true,
+        "preserve_aspect_ratio": true,
+        "constraints": "Preserve clear space. Do not recolour, distort or crop. Size by height with width:auto so the intrinsic 223.9x155.9 ratio is never rounded away."
+      }
+    },
+    {
+      "id": "adra-member",
+      "file": "logos/adra-logotype.png",
+      "site_path": "/badges/adra-logo.png",
+      "alt": "Adra member logotype",
+      "credential_ref": "adra",
+      "credential_name": "Adra — AI, Data and Robotics Association",
+      "target_url": "https://adr-association.eu/members/",
+      "locale": null,
+      "fundstelle_required": false,
+      "fundstelle_url": null,
+      "rendering": {
+        "no_recolour": true,
+        "preserve_aspect_ratio": true,
+        "constraints": "Use as delivered. No recolour, distortion or crop. Preserve aspect ratio (500x300) and clear space. Maximum rendered width 250 CSS px."
+      }
+    },
+    {
+      "id": "iso-27001-mark-en",
+      "file": "logos/tuv-iso27001-badge-en.png",
+      "site_path": "/badges/tuv-iso27001-badge-en.png",
+      "alt": "ISO/IEC 27001:2022 certification mark (English)",
+      "credential_ref": "iso-27001",
+      "credential_name": "ISO/IEC 27001:2022 — Information Security Management System",
+      "target_url": "https://www.tuvsud.com/ms-cert",
+      "locale": "en",
+      "fundstelle_required": true,
+      "fundstelle_url": "https://www.tuvsud.com/ms-cert",
+      "rendering": {
+        "no_recolour": true,
+        "preserve_aspect_ratio": true,
+        "constraints": "Full colour only; never inverted, greyscaled, cropped or distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must accompany the mark as a real anchor, not only as text inside the artwork."
+      }
+    },
+    {
+      "id": "iso-27001-mark-de",
+      "file": "logos/tuv-iso27001-badge-de.png",
+      "site_path": "/badges/tuv-iso27001-badge-de.png",
+      "alt": "ISO/IEC 27001:2022 Prüfzeichen (German)",
+      "credential_ref": "iso-27001",
+      "credential_name": "ISO/IEC 27001:2022 — Information Security Management System",
+      "target_url": "https://www.tuvsud.com/ms-zert",
+      "locale": "de",
+      "fundstelle_required": true,
+      "fundstelle_url": "https://www.tuvsud.com/ms-zert",
+      "rendering": {
+        "no_recolour": true,
+        "preserve_aspect_ratio": true,
+        "constraints": "Full colour only; never inverted, greyscaled, cropped or distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must accompany the mark as a real anchor, not only as text inside the artwork."
+      }
+    }
+  ]
+}

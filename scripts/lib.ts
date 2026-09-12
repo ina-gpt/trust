@@ -34,6 +34,10 @@ export interface Organization {
 }
 
 export interface Registration {
+  machine_checkable?: boolean;
+  machine_checkable_reason?: string;
+  last_human_verified?: string;
+  human_verified_by?: string;
   id: string;
   name: string;
   identifier: string;
@@ -55,6 +59,12 @@ export interface Certification {
   statement_of_applicability?: string;
   evidence_url?: string;
   fundstelle_required?: boolean;
+  /** Per-locale Fundstelle. The certifier's artwork carries a different URL per language. */
+  fundstelle_url?: { en: string; de: string };
+  machine_checkable?: boolean;
+  machine_checkable_reason?: string;
+  last_human_verified?: string;
+  human_verified_by?: string;
   stage?: string;
   since?: string;
   declared_roles?: string;
@@ -62,6 +72,10 @@ export interface Certification {
 }
 
 export interface Membership {
+  machine_checkable?: boolean;
+  machine_checkable_reason?: string;
+  last_human_verified?: string;
+  human_verified_by?: string;
   id: string;
   name: string;
   status: Status;
@@ -72,6 +86,30 @@ export interface Membership {
   logo?: string;
   reason?: string;
   detail?: string;
+}
+
+export interface Mark {
+  id: string;
+  display_name: string;
+  credential_ref: string;
+  file: string;
+  sha256: string;
+  grantor: string;
+  grantor_role: string;
+  permission_date: string;
+  permission_evidence: string;
+  source_url: string;
+  usage_constraints: string;
+  surfaces: Array<'site_footer' | 'trust_repo' | 'org_profile'>;
+  /**
+   * The public URL path this mark is served at on inagpt.com.
+   *
+   * Separate from `file` because the two trees name the same artwork
+   * differently: the trust repository keeps it under logos/, the site serves it
+   * from /badges/. Deriving one from the other by string surgery would break
+   * the first time either tree reorganised.
+   */
+  site_path?: string;
 }
 
 export interface Practice {
@@ -96,6 +134,7 @@ export interface Register {
   certifications: Certification[];
   memberships: Membership[];
   practices: Practice[];
+  marks: Mark[];
   contact: Contact;
 }
 

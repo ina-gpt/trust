@@ -9,7 +9,7 @@ Data processing: Germany (EU) · Compute: External GPU capacity within the EU.
 
 | Credential | Identifier | Issuer | Valid | Verify |
 |---|---|---|---|---|
-| **ISO/IEC 27001:2022 — Information Security Management System** | `12 310 71178 TMS` | TÜV SÜD Management Service GmbH | 2026-08-10 → 2029-08-09 | [verify](https://www.tuvsud.com/ms-zert) |
+| **ISO/IEC 27001:2022 — Information Security Management System** | `12 310 71178 TMS` | TÜV SÜD Management Service GmbH | 2026-08-10 → 2029-08-09 | [verify](https://www.tuvsud.com/ms-cert) |
 | Gaia-X European Association for Data and Cloud AISBL — European Member (Start-up) | `0469` | — | since 2026-07-23 | [verify](https://gaia-x.eu/who-we-are/members/) |
 | Adra — AI, Data and Robotics Association — Industry — Start-up | — | — | since 2026-09-10 | [verify](https://adr-association.eu/members/) |
 | IHK Berlin | `10702437784` | — | — | [verify](https://www.ihk.de/berlin) |
@@ -29,7 +29,7 @@ Data processing: Germany (EU) · Compute: External GPU capacity within the EU.
 No certification mark is displayed for anything in this section, and no
 affirmative wording is used about it anywhere on our surfaces.
 
-The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-zert> (Fundstelle, § 5a UWG).
+The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-cert> (Fundstelle, § 5a UWG).
 
 ## 3. Verification table
 
@@ -38,7 +38,7 @@ asking us for anything.
 
 | Credential | Status | Identifier | Primary source |
 |---|---|---|---|
-| ISO/IEC 27001:2022 — Information Security Management System | Held | `12 310 71178 TMS` | <https://www.tuvsud.com/ms-zert> |
+| ISO/IEC 27001:2022 — Information Security Management System | Held | `12 310 71178 TMS` | <https://www.tuvsud.com/ms-cert> |
 | Gaia-X European Association for Data and Cloud AISBL | Held | `0469` | <https://gaia-x.eu/who-we-are/members/> |
 | Adra — AI, Data and Robotics Association | Held | directory-listed | <https://adr-association.eu/members/> |
 | IHK Berlin | Held | `10702437784` | <https://www.ihk.de/berlin> |

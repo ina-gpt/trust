@@ -1,6 +1,6 @@
 {
   "$schema": "https://github.com/ina-gpt/trust/schema/credentials.schema.json",
-  "generated_from_commit": "910200d3ffa7b691796720f8d60c402d82f76eb4",
+  "generated_from_commit": "96420ba1eed6c24ae07bcfdc54e921db828cb070",
   "organization": {
     "legal_name": "INA GPT GmbH",
     "platform_name": "INA GPT",
@@ -23,7 +23,7 @@
       "valid_from": "2026-08-10",
       "valid_to": "2029-08-09",
       "statement_of_applicability": "v1.7 (2026-08-04)",
-      "evidence_url": "https://www.tuvsud.com/ms-zert"
+      "evidence_url": "https://www.tuvsud.com/ms-cert"
     },
     {
       "id": "iso-42001",
@@ -154,5 +154,65 @@
     "canonical_url": "https://inagpt.com/.well-known/security.txt",
     "preferred_languages": "de, en, fa"
   },
-  "fundstelle": "https://www.tuvsud.com/ms-zert"
+  "fundstelle": {
+    "en": "https://www.tuvsud.com/ms-cert",
+    "de": "https://www.tuvsud.com/ms-zert"
+  },
+  "marks": [
+    {
+      "id": "gaia-x-member",
+      "display_name": "Gaia-X member logo",
+      "credential_ref": "gaia-x",
+      "file": "logos/gaia-x-member.svg",
+      "sha256": "2f6323f564059b78772d8312e966ca9184fef685018315419dfb81d80dba7509",
+      "grantor": "Gaia-X European Association for Data and Cloud AISBL",
+      "permission_date": "2026-08-10",
+      "source_url": "https://gaia-x.eu/who-we-are/members/",
+      "surfaces": [
+        "site_footer",
+        "trust_repo",
+        "org_profile"
+      ]
+    },
+    {
+      "id": "adra-member",
+      "display_name": "Adra member logotype",
+      "credential_ref": "adra",
+      "file": "logos/adra-logotype.png",
+      "sha256": "227d5dc739473f8649ee0d16ede2ba165870bc25fbb8aa9f9705e233c7b46600",
+      "grantor": "Adra — AI, Data and Robotics Association AISBL",
+      "permission_date": "2026-09-10",
+      "source_url": "https://adr-association.eu/sites/default/files/2024-07/RGB_Adra-logotype_CoL_1.png",
+      "surfaces": [
+        "site_footer",
+        "trust_repo"
+      ]
+    },
+    {
+      "id": "iso-27001-mark-en",
+      "display_name": "ISO/IEC 27001:2022 certification mark (English)",
+      "credential_ref": "iso-27001",
+      "file": "logos/tuv-iso27001-badge-en.png",
+      "sha256": "4066c5a7d2cc9cb09dfda02432bacfb1b1dae6ecba8853c5455ad260ed1bfb70",
+      "grantor": "TÜV SÜD Management Service GmbH",
+      "permission_date": "2026-08-10",
+      "source_url": "https://www.tuvsud.com/ms-cert",
+      "surfaces": [
+        "site_footer"
+      ]
+    },
+    {
+      "id": "iso-27001-mark-de",
+      "display_name": "ISO/IEC 27001:2022 Prüfzeichen (German)",
+      "credential_ref": "iso-27001",
+      "file": "logos/tuv-iso27001-badge-de.png",
+      "sha256": "36ba9610fb74a6b045e186d6432acba044c9c50db3366fd6c7d9da63c79ca0cd",
+      "grantor": "TÜV SÜD Management Service GmbH",
+      "permission_date": "2026-08-10",
+      "source_url": "https://www.tuvsud.com/ms-zert",
+      "surfaces": [
+        "site_footer"
+      ]
+    }
+  ]
 }

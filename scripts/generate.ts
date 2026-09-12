@@ -113,12 +113,25 @@ function pendingSection(): string {
   return lines.join('\n');
 }
 
-function fundstelleNote(): string {
+/**
+ * The Fundstelle sentence, for a given locale.
+ *
+ * Defaults to `en` because every GitHub surface this file generates is in
+ * English — and the certifier's ENGLISH badge artwork carries the English URL.
+ * Pairing an English page with the German URL is what made the site footer look
+ * inconsistent: a badge printed with one address beside a link to another.
+ */
+function fundstelleUrlFor(locale: 'en' | 'de' = 'en'): string {
+  const cert = r.certifications.find((c) => c.fundstelle_required);
+  return cert?.fundstelle_url?.[locale] ?? FUNDSTELLE_URL;
+}
+
+function fundstelleNote(locale: 'en' | 'de' = 'en'): string {
   const cert = r.certifications.find((c) => c.fundstelle_required);
   if (!cert) return '';
   return (
     `The ${cert.issuer} certificate and test mark are verifiable at the issuer's ` +
-    `certificate database: <${FUNDSTELLE_URL}> (Fundstelle, § 5a UWG).`
+    `certificate database: <${fundstelleUrlFor(locale)}> (Fundstelle, § 5a UWG).`
   );
 }
 
@@ -380,9 +393,87 @@ const trustJson = {
     canonical_url: r.contact.canonical_url,
     preferred_languages: r.contact.preferred_languages,
   },
-  fundstelle: FUNDSTELLE_URL,
+  // Both locales, because the certifier ships one URL per language and a
+  // consumer must be able to pick the one matching the artwork it renders.
+  fundstelle: { en: fundstelleUrlFor('en'), de: fundstelleUrlFor('de') },
+  marks: r.marks.map((m) => ({
+    id: m.id,
+    display_name: m.display_name,
+    credential_ref: m.credential_ref,
+    file: m.file,
+    sha256: m.sha256,
+    grantor: m.grantor,
+    permission_date: m.permission_date,
+    source_url: m.source_url,
+    surfaces: m.surfaces,
+  })),
 };
 write('trust.json', JSON.stringify(trustJson, null, 2));
+
+
+/* ------------------------------------------------------------- marks.json -- */
+/**
+ * The footer's contract.
+ *
+ * Only marks whose credential_ref is HELD and whose surfaces include
+ * site_footer. That filter is the whole point: removing a credential from the
+ * register, or downgrading it from held, removes its mark from the site on the
+ * next deploy with no code change — which is what stops the footer and the
+ * register from ever disagreeing again.
+ *
+ * Rendering hints travel with each mark because the permission constrains them.
+ * A consumer that recolours or distorts a mark breaches the licence, so the
+ * constraint is data, not a comment in a component nobody reads.
+ */
+const heldIds = new Set([
+  ...r.certifications.filter((c) => c.status === 'held').map((c) => c.id),
+  ...r.memberships.filter((m) => m.status === 'held').map((m) => m.id),
+  ...r.registrations.filter((x) => x.status === 'held').map((x) => x.id),
+]);
+
+const footerMarks = r.marks
+  .filter((m) => m.surfaces.includes('site_footer'))
+  .filter((m) => heldIds.has(m.credential_ref));
+
+const credentialFor = (id: string) =>
+  r.certifications.find((c) => c.id === id) ?? r.memberships.find((m) => m.id === id);
+
+write('marks.json', JSON.stringify({
+  $comment: 'GENERATED from data/credentials.yaml. Do not edit. Only marks whose credential is HELD appear here.',
+  generated_from_commit: commitSha(),
+  fundstelle: { en: fundstelleUrlFor('en'), de: fundstelleUrlFor('de') },
+  marks: footerMarks.map((m) => {
+    const cred = credentialFor(m.credential_ref);
+    const isCertMark = r.certifications.some((c) => c.id === m.credential_ref);
+    const localeMatch = /-(en|de)$/.exec(m.id)?.[1] as 'en' | 'de' | undefined;
+    return {
+      id: m.id,
+      file: m.file,
+      site_path: m.site_path ?? null,
+      alt: m.display_name,
+      credential_ref: m.credential_ref,
+      credential_name: cred?.name ?? m.credential_ref,
+      // For a CERTIFICATION mark the link must go to the Fundstelle for the
+      // mark's own locale — the same address the artwork is printed with.
+      // Taking the credential's single evidence_url sent the German badge to
+      // the English URL, which is the mismatch this whole phase started from.
+      target_url: isCertMark
+        ? fundstelleUrlFor(localeMatch ?? 'en')
+        : ((cred as { evidence_url?: string } | undefined)?.evidence_url ?? m.source_url),
+      locale: localeMatch ?? null,
+      // Where the mark IS the certification mark, the Fundstelle must appear
+      // beside it as a real anchor — text inside the artwork does not satisfy
+      // the reference duty.
+      fundstelle_required: Boolean(isCertMark),
+      fundstelle_url: isCertMark ? fundstelleUrlFor(localeMatch ?? 'en') : null,
+      rendering: {
+        no_recolour: true,
+        preserve_aspect_ratio: true,
+        constraints: m.usage_constraints,
+      },
+    };
+  }),
+}, null, 2));
 
 /* ---------------------------------------------------------- security.txt -- */
 
@@ -403,7 +494,7 @@ write('security.txt', [
 ].join('\n'));
 
 process.stdout.write(
-  `generate: wrote 7 file(s) to build/ — ` +
+  `generate: wrote 8 file(s) to build/ — ` +
     `${r.certifications.filter((x) => x.status === 'held').length + r.memberships.filter((x) => x.status === 'held').length + r.registrations.filter((x) => x.status === 'held').length} held, ` +
     `${r.certifications.filter((x) => x.status !== 'held').length + r.memberships.filter((x) => x.status !== 'held').length} not held\n`
 );

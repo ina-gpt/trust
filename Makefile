@@ -10,7 +10,7 @@ SHELL := /bin/bash
 
 NPX := npx --no-install
 
-.PHONY: trust check drift validate guard generate links negative fixtures denylist verify install-site clean
+.PHONY: trust check drift validate guard generate links negative fixtures denylist verify synced install-site clean
 
 ## validate + guard + generate — the normal local loop
 trust: generate validate guard
@@ -77,6 +77,12 @@ drift:
 
 links:
 	@$(NPX) tsx scripts/check-links.ts
+
+## Is what is PUBLISHED still what the register renders? Runs in validate, not
+## publish: validation must notice that the world disagrees with the register
+## even when publishing is impossible.
+synced:
+	@$(NPX) tsx scripts/assert-synced.ts
 
 ## Independent audit: fetch the PUBLISHED surfaces and assert the claims.
 ## Deliberately does not read build/ — that would only prove the generator

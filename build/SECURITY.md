@@ -44,7 +44,7 @@ de, en, fa
 
 **Security testing.** Automated dependency scanning, static analysis and code review run in the delivery pipeline. Independent external penetration testing is commissioned as part of the 2026 security programme.
 
-The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-zert> (Fundstelle, § 5a UWG).
+The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-cert> (Fundstelle, § 5a UWG).
 
 ## Verify our compliance claims
 

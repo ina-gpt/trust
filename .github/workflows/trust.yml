@@ -50,6 +50,13 @@ jobs:
           DISCLOSURE_GUARD_KEY: ${{ secrets.DISCLOSURE_GUARD_KEY }}
         run: make check
 
+      # Catches register-vs-published drift even when the sync itself cannot
+      # run, which the publish job structurally cannot do.
+      - name: make synced
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: make synced
+
   negative:
     runs-on: ubuntu-latest
     steps:
@@ -105,7 +112,10 @@ jobs:
 
   publish:
     needs: [validate, negative, links]
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    # A forked PR has no access to secrets, so it CANNOT sync and must not
+    # pretend to. Skipped by `if:` so GitHub shows it as skipped rather than
+    # green. Every other trigger must actually publish or fail.
+    if: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.event_name == 'schedule') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -124,15 +134,19 @@ jobs:
           GH_TOKEN: ${{ secrets.TRUST_SYNC_TOKEN }}
         run: |
           set -euo pipefail
-          # NOT CONFIGURED and BROKEN are different, and must not share a colour.
+          # FAIL CLOSED. An earlier version exited 0 with a warning when the
+          # token was absent, on the reasoning that a permanently red pipeline
+          # gets ignored. That was wrong, and for the same reason the drift
+          # check was wrong: a job that reports success while doing nothing is
+          # a gate that cannot fail. The register drifting away from what is
+          # published is exactly the defect this repository exists to prevent,
+          # so "we could not publish" must be visible as a failure.
           #
-          # GITHUB_TOKEN cannot write to sibling repositories, so this job needs
-          # a PAT. Until one exists the job SKIPS with a loud notice rather than
-          # failing: a permanently red pipeline gets ignored, and then the day it
-          # goes red for a real reason nobody looks. Once the token IS present,
-          # any sync failure is fatal — because then it really is broken.
+          # The forked-PR case is handled by the job's own `if:`, so GitHub
+          # renders it as SKIPPED — never as a passing step.
           if [ -z "${GH_TOKEN:-}" ]; then
-            echo "::warning title=trust sync not configured::TRUST_SYNC_TOKEN is absent, so the generated surface was NOT synced to the sibling repositories. Add a PAT with contents:write on the ina-gpt public repos to enable it. Run scripts/sync.ts locally in the meantime."
-            exit 0
+            echo "::error title=trust sync did not run::TRUST_SYNC_TOKEN absent — cross-repository sync did not run"
+            echo "TRUST_SYNC_TOKEN absent — cross-repository sync did not run" >&2
+            exit 1
           fi
           npx tsx scripts/sync.ts --commit-sha="${GITHUB_SHA::7}"

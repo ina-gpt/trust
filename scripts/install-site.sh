@@ -53,7 +53,19 @@ install_one() {
 }
 
 install_one "$SRC/trust.json"   "$ROOT/trust.json"
+install_one "$SRC/marks.json"   "$ROOT/marks.json"
 install_one "$SRC/security.txt" "$ROOT/.well-known/security.txt"
+
+# The web application consumes marks.json at BUILD time, so it needs the file
+# inside its own tree — a runtime fetch would make the footer depend on a
+# network call, and a build-time import makes an unsanctioned mark a build
+# failure instead of a live one.
+APP_MARKS="${INA_APP_MARKS:-/root/inagpt/src/lib/trust/marks.generated.json}"
+if [ -d "$(dirname "$APP_MARKS")" ]; then
+  install_one "$SRC/marks.json" "$APP_MARKS"
+else
+  echo "  skipped    $APP_MARKS (application tree not present here)"
+fi
 
 if [ "$changed" -eq 0 ]; then
   echo "install-site: OK — already current, nothing written, no backup created"

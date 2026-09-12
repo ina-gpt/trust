@@ -15,7 +15,7 @@ to the issuer's own record, and anything that does not carry both is in the
 
 | Credential | Identifier | Issuer | Valid | Verify |
 |---|---|---|---|---|
-| **ISO/IEC 27001:2022 — Information Security Management System** | `12 310 71178 TMS` | TÜV SÜD Management Service GmbH | 2026-08-10 → 2029-08-09 | [verify](https://www.tuvsud.com/ms-zert) |
+| **ISO/IEC 27001:2022 — Information Security Management System** | `12 310 71178 TMS` | TÜV SÜD Management Service GmbH | 2026-08-10 → 2029-08-09 | [verify](https://www.tuvsud.com/ms-cert) |
 | Gaia-X European Association for Data and Cloud AISBL — European Member (Start-up) | `0469` | — | since 2026-07-23 | [verify](https://gaia-x.eu/who-we-are/members/) |
 | Adra — AI, Data and Robotics Association — Industry — Start-up | — | — | since 2026-09-10 | [verify](https://adr-association.eu/members/) |
 | IHK Berlin | `10702437784` | — | — | [verify](https://www.ihk.de/berlin) |
@@ -32,7 +32,7 @@ to the issuer's own record, and anything that does not carry both is in the
 - Bitkom e.V. — Applied (since 2026-07-23).
 - Apply AI Alliance (European Commission) — Stakeholders' Catalogue — Applied (since 2026-07-23).
 
-The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-zert> (Fundstelle, § 5a UWG).
+The TÜV SÜD Management Service GmbH certificate and test mark are verifiable at the issuer's certificate database: <https://www.tuvsud.com/ms-cert> (Fundstelle, § 5a UWG).
 
 ## How to verify this register yourself
 
