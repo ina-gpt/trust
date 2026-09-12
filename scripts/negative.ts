@@ -45,6 +45,9 @@ const CASES: Case[] = [
   { fixture: 'n20-document-ref-undated.yaml', expectRule: 'V12', description: 'document_on_request whose reference carries no date' },
   { fixture: 'n21-held-without-url-or-tier.yaml', expectRule: 'V12', description: 'held with neither a public URL nor a declared evidence tier' },
   { fixture: 'n22-public-registry-without-url.yaml', expectRule: 'V12', description: 'public_registry without the URL it promises' },
+  { fixture: 'n23-held-no-url-no-tier.yaml', expectRule: 'V2', description: 'held with neither a link nor a dated document — the V2 relaxation is not a hole' },
+  { fixture: 'n24-render-height-not-derived.yaml', expectRule: 'V13', description: 'a render height edited without re-deriving it from the measurements' },
+  { fixture: 'n25-rendered-mark-without-measurements.yaml', expectRule: 'V13', description: 'a mark rendered on the site with no measured render block' },
 ];
 
 let failures = 0;

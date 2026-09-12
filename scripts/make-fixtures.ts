@@ -91,20 +91,31 @@ function emit(name: string, why: string, r: Register) {
 /* n12 — V10: a mark whose credential is not held */
 {
   const r = clone();
-  // KI Bundesverband is verification_pending. Declaring a mark for it is the
-  // exact defect this rule exists to catch: the live footer displayed that
-  // logotype while the register carried the membership as unverified.
+  // RE-POINTED 2026-09-12, and the reason is the lesson.
+  //
+  // This fixture used ki-bundesverband because that membership was
+  // verification_pending. It became HELD on a dated document — so a mark for
+  // it is now legitimate, and the fixture kept reporting `ok` while going red
+  // for an ENTIRELY DIFFERENT reason (its placeholder sha256 does not match
+  // the file it names). It asserted a property of the register's DATA instead
+  // of a property of the RULE, so a legitimate data change disarmed it in
+  // silence and the suite still showed green.
+  //
+  // ISO 42001 is used instead: it is `in_progress`, and V3 forbids it from
+  // ever being held, so no future data change can make this mark legitimate.
+  // The digest is the REAL digest of the file named, so the only thing left
+  // for V10 to object to is the unheld credential.
   r.marks.push({
-    id: 'kibv-mark',
-    display_name: 'KI Bundesverband logotype',
-    credential_ref: 'ki-bundesverband',
+    id: 'iso42001-mark',
+    display_name: 'ISO/IEC 42001 mark (no such certificate exists)',
+    credential_ref: 'iso-42001',
     file: 'logos/adra-logotype.png',
     sha256: '227d5dc739473f8649ee0d16ede2ba165870bc25fbb8aa9f9705e233c7b46600',
-    grantor: 'KI Bundesverband e.V.',
-    grantor_role: 'Membership office',
+    grantor: 'TUV SUD Management Service GmbH',
+    grantor_role: 'Certification body',
     permission_date: '2026-07-07',
-    permission_evidence: 'Fixture only — no such permission exists. This fixture must FAIL.',
-    source_url: 'https://ki-verband.de/',
+    permission_evidence: 'Fixture only — no such certificate and no such permission exists. This fixture must FAIL.',
+    source_url: 'https://www.tuvsud.com/ms-cert',
     usage_constraints: 'Fixture only.',
     surfaces: ['site_footer'],
   });
@@ -161,9 +172,16 @@ function emit(name: string, why: string, r: Register) {
 /* n21 — V12: held, no public URL, no declared tier */
 {
   const r = clone();
-  const m = r.memberships.find((x) => x.id === 'ki-bundesverband')!;
+  // NOT ki-bundesverband any more: that entry now CARRIES a tier and a dated
+  // document_ref, so stripping its URL left a perfectly valid record and the
+  // fixture went red on something else. A fixture must control its own
+  // premise. Adra has no tier, so removing its URL produces exactly the state
+  // this rule judges.
+  const m = r.memberships.find((x) => x.id === 'adra')!;
   m.status = 'held';
-  delete m.evidence_url;
+  delete (m as { evidence_url?: string | null }).evidence_url;
+  delete (m as { evidence_tier?: string }).evidence_tier;
+  delete (m as { document_ref?: string }).document_ref;
   emit('n21-held-without-url-or-tier.yaml', 'V12: a held credential must name HOW it is backed — a public URL or a dated document.', r);
 }
 
@@ -179,6 +197,38 @@ function emit(name: string, why: string, r: Register) {
   c.evidence_tier = 'public_registry';
   c.evidence_url = null;
   emit('n22-public-registry-without-url.yaml', 'V12: public_registry claims anyone can open the evidence, so the URL is mandatory.', r);
+}
+
+/* n23 — V2 after the tier change: held, no URL, no tier, STILL refused */
+{
+  const r = clone();
+  // V2 was taught to accept a dated document (2026-09-12), because a
+  // membership whose directory entry is not live has no URL to give. This
+  // fixture pins what it must still REFUSE, so that relaxation cannot quietly
+  // decay into "held needs nothing at all".
+  const m = r.memberships.find((x) => x.id === 'gaia-x')!;
+  m.status = 'held';
+  delete (m as { evidence_url?: string | null }).evidence_url;
+  delete (m as { evidence_tier?: string }).evidence_tier;
+  delete (m as { document_ref?: string }).document_ref;
+  emit('n23-held-no-url-no-tier.yaml', 'V2: held with neither a primary-source link nor a dated document must still fail.', r);
+}
+
+/* n24 — V13: a render height edited without re-deriving it */
+{
+  const r = clone();
+  // box_height_px is what the site renders AND what the app's resolution gate
+  // measures density against. A hand-edited value would desynchronise the two
+  // silently, so it must follow from the stored measurements.
+  r.marks[0]!.render!.box_height_px = 40;
+  emit('n24-render-height-not-derived.yaml', 'V13: box_height_px must follow from the stored measurements via the policy formula.', r);
+}
+
+/* n25 — V13: a mark rendered on the site with no measurements at all */
+{
+  const r = clone();
+  delete r.marks[1]!.render;
+  emit('n25-rendered-mark-without-measurements.yaml', 'V13: a mark with a site_path must carry its measured render block.', r);
 }
 
 /* n16 — V11: blocked evidence link with no human verification */
@@ -202,4 +252,4 @@ function emit(name: string, why: string, r: Register) {
   emit('n17-human-verify-expired.yaml', 'V11: a confirmation 181 days old has expired; the limit is 180.', r);
 }
 
-process.stdout.write('make-fixtures: wrote 17 fixture(s) derived from the real register\n');
+process.stdout.write('make-fixtures: wrote 20 fixture(s) derived from the real register\n');

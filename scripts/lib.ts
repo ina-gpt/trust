@@ -111,7 +111,27 @@ export interface Membership {
   detail?: string;
 }
 
+export interface MarkRender {
+  ink_fraction: number;
+  ink_coverage: number;
+  source_ratio: number;
+  box_height_px: number;
+  sizing: 'ink-normalised' | 'width-capped';
+  measured_at: string;
+  method: string;
+}
+
+export interface MarkRenderPolicy {
+  target_ink_px: number;
+  max_width_px: number;
+  coverage_boost_exponent: number;
+  coverage_boost_max: number;
+  coverage_reference: string;
+  formula: string;
+}
+
 export interface Mark {
+  render?: MarkRender;
   id: string;
   display_name: string;
   credential_ref: string;
@@ -152,6 +172,7 @@ export interface Contact {
 }
 
 export interface Register {
+  mark_render_policy?: MarkRenderPolicy;
   organization: Organization;
   registrations: Registration[];
   certifications: Certification[];

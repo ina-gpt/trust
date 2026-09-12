@@ -1,6 +1,6 @@
 {
   "$schema": "https://github.com/ina-gpt/trust/schema/credentials.schema.json",
-  "generated_from_commit": "c0cce881057695d5aaea97e31ad7a3cba1539295",
+  "generated_from_commit": "677273e0a98542164db98ee28ad0e7151a0f1b0f",
   "organization": {
     "legal_name": "INA GPT GmbH",
     "platform_name": "INA GPT",
@@ -70,7 +70,8 @@
     {
       "id": "ki-bundesverband",
       "name": "KI Bundesverband e.V.",
-      "status": "verification_pending",
+      "status": "held",
+      "since": "2026-06-29",
       "evidence_url": null
     },
     {
@@ -212,6 +213,20 @@
       "source_url": "https://www.tuvsud.com/ms-zert",
       "surfaces": [
         "site_footer"
+      ]
+    },
+    {
+      "id": "ki-bundesverband-member",
+      "display_name": "KI Bundesverband member logo",
+      "credential_ref": "ki-bundesverband",
+      "file": "logos/ki-bundesverband-mitglied.png",
+      "sha256": "ba963d000f2ddce93563bfe2a365d4b4f8faa5036326653cccac48d96609f10d",
+      "grantor": "KI Bundesverband e.V.",
+      "permission_date": "2026-06-29",
+      "source_url": "https://ki-verband.de/",
+      "surfaces": [
+        "site_footer",
+        "trust_repo"
       ]
     },
     {

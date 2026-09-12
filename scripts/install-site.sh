@@ -19,6 +19,7 @@
 set -euo pipefail
 
 ROOT="${INA_TRUST_WEB_ROOT:-/var/www/inagpt-trust}"
+ROOT_DIR_LOGOS="$(cd "$(dirname "$0")/.." && pwd)/logos"
 
 # ── REACHABILITY ────────────────────────────────────────────────────────────
 # Installing a file and SERVING it are two different facts, and this script
@@ -120,6 +121,25 @@ install_one "$SRC/security.txt" "$ROOT/.well-known/security.txt"
 APP_SOURCES="${INA_APP_SOURCES:-/root/inagpt/public/badges/SOURCES.json}"
 if [ -d "$(dirname "$APP_SOURCES")" ]; then
   install_one "$SRC/sources.json" "$APP_SOURCES"
+fi
+
+# ── MARK ASSETS ─────────────────────────────────────────────────────────────
+# The register declares each mark's site_path; until now nothing installed the
+# BYTES that path serves, so the file was hand-copied and could drift from the
+# sha256 the register swears to. The app's own membership-logos gate checks the
+# file exists and hashes correctly, which means a drift was caught only at
+# commit time, on a red gate, after the fact. Installing the assets from the
+# register makes the register the source of truth for the bytes as well as for
+# the permission.
+APP_PUBLIC="${INA_APP_PUBLIC:-/root/inagpt/public}"
+if [ -d "$APP_PUBLIC" ] && [ -f "$SRC/marks.json" ]; then
+  while IFS=$'\t' read -r mark_file mark_site; do
+    [ -n "$mark_file" ] && [ -n "$mark_site" ] || continue
+    [ -f "$ROOT_DIR_LOGOS/$mark_file" ] || { echo "install-site: MISSING mark asset $mark_file named by the register"; continue; }
+    install_one "$ROOT_DIR_LOGOS/$mark_file" "$APP_PUBLIC$mark_site"
+  done <<EOF
+$(node -e 'const m=require("'"$SRC"'/marks.json");for(const k of m.marks){if(k.site_path)console.log(k.file.replace(/^logos\//,"")+"\t"+k.site_path)}')
+EOF
 fi
 
 APP_MARKS="${INA_APP_MARKS:-/root/inagpt/src/lib/trust/marks.generated.json}"

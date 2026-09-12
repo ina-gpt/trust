@@ -77,13 +77,30 @@ function v2HeldIsVerifiable(r: Register) {
   }
   for (const [i, e] of r.memberships.entries()) {
     if (e.status !== 'held') continue;
-    if (!e.evidence_url) {
-      v('V2', `memberships[${i}].evidence_url`, 'status "held" requires a primary-source link');
+    // V2 PREDATES EVIDENCE TIERS, and demanding a URL here was the one thing
+    // standing between a genuinely held membership and an honest record.
+    //
+    // A member whose directory entry is not live has no public URL to give.
+    // The wrong answers are both available and both bad: mark it unheld (false),
+    // or point evidence_url at the association's home page and let V2 pass on a
+    // link that proves nothing about THIS membership. The second is worse,
+    // because it launders a general URL into specific evidence — exactly the
+    // confusion this rule exists to prevent.
+    //
+    // So V2 now accepts EITHER: a primary-source link, OR the
+    // document_on_request tier carrying a DATED document_ref. V12 enforces the
+    // date; this rule only needs to know that one of the two obligations is
+    // met. Nothing is softened — the set of acceptable evidence is stated
+    // rather than assumed to be "a URL".
+    const tier = (e as { evidence_tier?: string }).evidence_tier;
+    const docRef = (e as { document_ref?: string }).document_ref;
+    const documented = tier === 'document_on_request' && Boolean(docRef);
+    if (!e.evidence_url && !documented) {
+      v('V2', `memberships[${i}].evidence_url`, 'status "held" requires a primary-source link, or evidence_tier document_on_request with a dated document_ref');
       continue;
     }
-    // Directory-listed membership: the link IS the verification.
-    if (!e.identifier && !e.evidence_url) {
-      v('V2', `memberships[${i}].identifier`, 'status "held" requires an identifier or a member-directory link');
+    if (!e.identifier && !e.evidence_url && !documented) {
+      v('V2', `memberships[${i}].identifier`, 'status "held" requires an identifier, a member-directory link, or a dated document');
     }
   }
 }
@@ -331,6 +348,57 @@ const HUMAN_VERIFY_MAX_AGE_DAYS = 180;
  * becoming a flag day across a register that predates it, while any entry that
  * opts into a tier is held to it.
  */
+/**
+ * V13 — the derived render height must follow from the stored measurements.
+ *
+ * The register now carries a measured ink_fraction, ink_coverage and
+ * source_ratio per mark, plus the box_height_px derived from them. That last
+ * number is what the website renders and what the app's resolution gate checks
+ * against, so a hand-edited value would silently desynchronise the two.
+ *
+ * This recomputes it from mark_render_policy.formula and refuses a mismatch. It
+ * cannot verify the PIXEL measurements — this repo deliberately has no image
+ * library, because a public compliance register should not carry a native
+ * binary to satisfy a lint. The measurements are attested with their method and
+ * pinned to a sha256; the APP's membership-logos gate, which already has sharp,
+ * re-measures them against the actual bytes. Arithmetic is checked here,
+ * pixels are checked there, and neither is taken on trust.
+ */
+function v13RenderDerivation(reg: Register): void {
+  const pol = reg.mark_render_policy;
+  const marks = reg.marks ?? [];
+  const withRender = marks.filter((m) => m.render);
+  if (!pol) {
+    if (withRender.length) v('V13', 'mark_render_policy', `${withRender.length} mark(s) carry a render block but no policy defines how box_height_px is derived`);
+    return;
+  }
+  const ref = marks.find((m) => m.id === pol.coverage_reference);
+  if (!ref?.render) {
+    v('V13', 'mark_render_policy.coverage_reference', `names "${pol.coverage_reference}", which has no render block to take a reference coverage from`);
+    return;
+  }
+  const refCov = ref.render.ink_coverage;
+  for (const [i, mk] of marks.entries()) {
+    const at = `marks[${i}] (${mk.id})`;
+    if (!mk.render) {
+      if (mk.site_path) v('V13', `${at}.render`, 'a mark rendered on the site must carry its measured render block');
+      continue;
+    }
+    const r = mk.render;
+    const boost = Math.min(pol.coverage_boost_max, Math.max(1, (refCov / r.ink_coverage) ** pol.coverage_boost_exponent));
+    const byInk = (pol.target_ink_px / r.ink_fraction) * boost;
+    const byWidth = pol.max_width_px / r.source_ratio;
+    const want = Math.max(18, Math.round(Math.min(byInk, byWidth)));
+    if (want !== r.box_height_px) {
+      v('V13', `${at}.render.box_height_px`, `stored ${r.box_height_px}px, but the policy formula gives ${want}px from the stored measurements — the number was edited without re-deriving it`);
+    }
+    const expectSizing = byWidth < byInk ? 'width-capped' : 'ink-normalised';
+    if (r.sizing !== expectSizing) {
+      v('V13', `${at}.render.sizing`, `says "${r.sizing}" but the binding constraint is ${expectSizing}`);
+    }
+  }
+}
+
 function v12EvidenceTier(reg: Register) {
   const groups: Array<[string, Array<{ id: string; status: string; evidence_url?: string | null }>]> = [
     ['registrations', reg.registrations],
@@ -422,6 +490,7 @@ if (violations.length === 0) {
   v6v10Marks(register);
   v11HumanVerification(register);
   v12EvidenceTier(register);
+  v13RenderDerivation(register);
   v9Determinism(register);
 }
 

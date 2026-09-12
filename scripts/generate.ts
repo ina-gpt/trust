@@ -442,6 +442,11 @@ write('marks.json', JSON.stringify({
   $comment: 'GENERATED from data/credentials.yaml. Do not edit. Only marks whose credential is HELD appear here.',
   generated_from_commit: commitSha(),
   fundstelle: { en: fundstelleUrlFor('en'), de: fundstelleUrlFor('de') },
+  // The sizing POLICY travels with the marks. The app must not re-declare this
+  // formula: a formula duplicated across two repositories is a formula that
+  // will eventually disagree, and when the renderer and the resolution gate
+  // disagree the gate does not go red — it goes WRONG.
+  render_policy: r.mark_render_policy ?? null,
   marks: footerMarks.map((m) => {
     const cred = credentialFor(m.credential_ref);
     const isCertMark = r.certifications.some((c) => c.id === m.credential_ref);
@@ -453,6 +458,9 @@ write('marks.json', JSON.stringify({
       alt: m.display_name,
       credential_ref: m.credential_ref,
       credential_name: cred?.name ?? m.credential_ref,
+      // Measured render geometry, attested here against the sha256 above and
+      // RE-MEASURED from the actual bytes by the app's membership-logos gate.
+      render: m.render ?? null,
       // For a CERTIFICATION mark the link must go to the Fundstelle for the
       // mark's own locale — the same address the artwork is printed with.
       // Taking the credential's single evidence_url sent the German badge to

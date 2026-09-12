@@ -14,6 +14,7 @@ Data processing: Germany (EU) · Compute: External GPU capacity within the EU.
 | Adra — AI, Data and Robotics Association — Industry — Start-up | — | — | since 2026-09-10 | [verify](https://adr-association.eu/members/) |
 | IHK Berlin | `10702437784` | — | — | [verify](https://www.ihk.de/berlin) |
 | Bundesverband Deutsche Startups e.V. | `14346` | — | — | [verify](https://startupverband.de/) |
+| KI Bundesverband e.V. | — | — | since 2026-06-29 | — |
 | Commercial register (Handelsregister) | `HRB 288452 B` | Amtsgericht Berlin (Charlottenburg) | — | [verify](https://www.handelsregister.de/rp_web/welcome.xhtml) |
 | VAT identification number (USt-IdNr.) | `DE464255291` | Bundeszentralamt für Steuern | — | [verify](https://ec.europa.eu/taxation_customs/vies/) |
 | D-U-N-S® Number | `317228889` | Dun & Bradstreet | — | [verify](https://www.upik.de/) |
@@ -21,7 +22,6 @@ Data processing: Germany (EU) · Compute: External GPU capacity within the EU.
 ## 2. In progress — not yet held
 
 - **ISO/IEC 42001:2023 — AI Management System** — In progress (since 2026-07-13) — Certification audit contracted (Stage 1 + Stage 2). No certificate has been issued. No certification mark is displayed.
-- KI Bundesverband e.V. — Verification pending. Member directory entry / membership number not yet linked.
 - appliedAI Institute for Europe — Use Case Library — Verification pending. Listed as "Sovereign AI Assistant for German Citizens".
 - Bitkom e.V. — Applied (since 2026-07-23).
 - Apply AI Alliance (European Commission) — Stakeholders' Catalogue — Applied (since 2026-07-23).
@@ -43,6 +43,7 @@ asking us for anything.
 | Adra — AI, Data and Robotics Association | Held | directory-listed | <https://adr-association.eu/members/> |
 | IHK Berlin | Held | `10702437784` | <https://www.ihk.de/berlin> |
 | Bundesverband Deutsche Startups e.V. | Held | `14346` | <https://startupverband.de/> |
+| KI Bundesverband e.V. | Held | directory-listed | <null> |
 | Commercial register (Handelsregister) | Held | `HRB 288452 B` | <https://www.handelsregister.de/rp_web/welcome.xhtml> |
 | VAT identification number (USt-IdNr.) | Held | `DE464255291` | <https://ec.europa.eu/taxation_customs/vies/> |
 | D-U-N-S® Number | Held | `317228889` | <https://www.upik.de/> |

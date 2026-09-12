@@ -43,6 +43,15 @@
     "usage_rules": "Full colour only; never inverted, greyscaled, cropped or distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must accompany the mark as a real anchor, not only as text inside the artwork.",
     "credential_ref": "iso-27001"
   },
+  "ki-bundesverband-logo.png": {
+    "organisation": "KI Bundesverband e.V.",
+    "source_url": "https://ki-verband.de/",
+    "sha256": "ba963d000f2ddce93563bfe2a365d4b4f8faa5036326653cccac48d96609f10d",
+    "permission": "Granted in writing by the association in its Aufnahmebestätigung of 2026-06-29, whose \"Sichtbarkeit\" section gives members explicit permission to place the association's logo on their own website. Held as a document rather than a public URL, hence evidence_tier document_on_request on the membership itself. The association's internal asset-distribution folder is deliberately not recorded in this public register; source_url below is the association reference only. Granted 2026-06-29.",
+    "permission_date": "2026-06-29",
+    "usage_rules": "Use as delivered. No recolour, no distortion, no crop. Preserve the intrinsic aspect ratio.",
+    "credential_ref": "ki-bundesverband"
+  },
   "startup-verband-logo.png": {
     "organisation": "Bundesverband Deutsche Startups e.V.",
     "source_url": "https://startupverband.de/fileadmin/startupverband/mediaarchiv/Logos_Mitglied_im_Startup-Verband.zip",

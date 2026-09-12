@@ -88,9 +88,11 @@ memberships:
   - id: ki-bundesverband
     name: KI Bundesverband e.V.
     status: held
+    evidence_tier: public_registry
+    document_ref: KI Bundesverband Aufnahmebestätigung, 2026-06-29
+    since: 2026-06-29
     reason: Member directory entry / membership number not yet linked.
     evidence_url: null
-    evidence_tier: public_registry
   - id: appliedai
     name: appliedAI Institute for Europe — Use Case Library
     status: verification_pending
@@ -136,6 +138,16 @@ contact:
   hiring_url: https://inagpt.com/careers
   canonical_url: https://inagpt.com/.well-known/security.txt
   preferred_languages: de, en, fa
+mark_render_policy:
+  target_ink_px: 26
+  max_width_px: 120
+  coverage_boost_exponent: 0.2
+  coverage_boost_max: 1.8
+  coverage_reference: adra-member
+  formula: >-
+    box_height_px = max(18, round(min(
+      (target_ink_px / ink_fraction) * clamp((ref_coverage / ink_coverage) ^ exponent, 1, boost_max),
+      max_width_px / source_ratio)))
 marks:
   - id: gaia-x-member
     display_name: Gaia-X member logo
@@ -153,6 +165,18 @@ marks:
     usage_constraints: Preserve clear space. Do not recolour, distort or crop. Size
       by height with width:auto so the intrinsic 223.9x155.9 ratio is never
       rounded away.
+    render:
+      ink_fraction: 0.5577
+      ink_coverage: 0.0555
+      source_ratio: 1.4365
+      box_height_px: 69
+      sizing: ink-normalised
+      measured_at: 2026-09-12
+      method: sharp trim(threshold 10) on the bytes pinned by sha256 above; SVG
+        rasterised at density 1200 first. ink_coverage is the fraction of pixels
+        with luminance < 235 at a 100px render height, flattened on white.
+        box_height_px is derived from these three numbers by
+        mark_render_policy.formula and is re-checked by V13.
     surfaces:
       - site_footer
       - trust_repo
@@ -172,6 +196,18 @@ marks:
     source_url: https://adr-association.eu/sites/default/files/2024-07/RGB_Adra-logotype_CoL_1.png
     usage_constraints: Use as delivered. No recolour, distortion or crop. Preserve
       aspect ratio (500x300) and clear space. Maximum rendered width 250 CSS px.
+    render:
+      ink_fraction: 0.8633
+      ink_coverage: 0.3874
+      source_ratio: 1.6667
+      box_height_px: 30
+      sizing: ink-normalised
+      measured_at: 2026-09-12
+      method: sharp trim(threshold 10) on the bytes pinned by sha256 above; SVG
+        rasterised at density 1200 first. ink_coverage is the fraction of pixels
+        with luminance < 235 at a 100px render height, flattened on white.
+        box_height_px is derived from these three numbers by
+        mark_render_policy.formula and is re-checked by V13.
     surfaces:
       - site_footer
       - trust_repo
@@ -191,6 +227,18 @@ marks:
     usage_constraints: Full colour only; never inverted, greyscaled, cropped or
       distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must
       accompany the mark as a real anchor, not only as text inside the artwork.
+    render:
+      ink_fraction: 0.8933
+      ink_coverage: 0.2973
+      source_ratio: 2
+      box_height_px: 31
+      sizing: ink-normalised
+      measured_at: 2026-09-12
+      method: sharp trim(threshold 10) on the bytes pinned by sha256 above; SVG
+        rasterised at density 1200 first. ink_coverage is the fraction of pixels
+        with luminance < 235 at a 100px render height, flattened on white.
+        box_height_px is derived from these three numbers by
+        mark_render_policy.formula and is re-checked by V13.
     surfaces:
       - site_footer
   - id: iso-27001-mark-de
@@ -209,8 +257,54 @@ marks:
     usage_constraints: Full colour only; never inverted, greyscaled, cropped or
       distorted. Preserve the exact 2:1 ratio (600x300). The Fundstelle must
       accompany the mark as a real anchor, not only as text inside the artwork.
+    render:
+      ink_fraction: 0.8933
+      ink_coverage: 0.3006
+      source_ratio: 2
+      box_height_px: 31
+      sizing: ink-normalised
+      measured_at: 2026-09-12
+      method: sharp trim(threshold 10) on the bytes pinned by sha256 above; SVG
+        rasterised at density 1200 first. ink_coverage is the fraction of pixels
+        with luminance < 235 at a 100px render height, flattened on white.
+        box_height_px is derived from these three numbers by
+        mark_render_policy.formula and is re-checked by V13.
     surfaces:
       - site_footer
+  - id: ki-bundesverband-member
+    display_name: KI Bundesverband member logo
+    credential_ref: ki-bundesverband
+    file: logos/ki-bundesverband-mitglied.png
+    site_path: /badges/ki-bundesverband-logo.png
+    sha256: ba963d000f2ddce93563bfe2a365d4b4f8faa5036326653cccac48d96609f10d
+    grantor: KI Bundesverband e.V.
+    grantor_role: The association itself, in its membership confirmation
+    permission_date: 2026-06-29
+    permission_evidence: Granted in writing by the association in its
+      Aufnahmebestätigung of 2026-06-29, whose "Sichtbarkeit" section gives
+      members explicit permission to place the association's logo on their own
+      website. Held as a document rather than a public URL, hence evidence_tier
+      document_on_request on the membership itself. The association's internal
+      asset-distribution folder is deliberately not recorded in this public
+      register; source_url below is the association reference only.
+    source_url: https://ki-verband.de/
+    usage_constraints: Use as delivered. No recolour, no distortion, no crop.
+      Preserve the intrinsic aspect ratio.
+    render:
+      ink_fraction: 0.5965
+      ink_coverage: 0.2394
+      source_ratio: 5.2018
+      box_height_px: 23
+      sizing: width-capped
+      measured_at: 2026-09-12
+      method: sharp trim(threshold 10) on the bytes pinned by sha256 above; SVG
+        rasterised at density 1200 first. ink_coverage is the fraction of pixels
+        with luminance < 235 at a 100px render height, flattened on white.
+        box_height_px is derived from these three numbers by
+        mark_render_policy.formula and is re-checked by V13.
+    surfaces:
+      - site_footer
+      - trust_repo
   - id: startup-verband-member
     display_name: Bundesverband Deutsche Startups member badge
     credential_ref: startup-verband
@@ -242,6 +336,18 @@ marks:
     usage_constraints: Use as delivered. No recolour, no distortion, no crop.
       Preserve the intrinsic aspect ratio. The colour variant is used; the
       archive also ships white and black variants.
+    render:
+      ink_fraction: 1
+      ink_coverage: 0.2037
+      source_ratio: 2.4927
+      box_height_px: 30
+      sizing: ink-normalised
+      measured_at: 2026-09-12
+      method: sharp trim(threshold 10) on the bytes pinned by sha256 above; SVG
+        rasterised at density 1200 first. ink_coverage is the fraction of pixels
+        with luminance < 235 at a 100px render height, flattened on white.
+        box_height_px is derived from these three numbers by
+        mark_render_policy.formula and is re-checked by V13.
     surfaces:
       - site_footer
       - trust_repo
