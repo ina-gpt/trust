@@ -1,0 +1,5 @@
+node_modules/
+*.log
+.DS_Store
+# The plaintext denylist NEVER lives here — only its HMAC digests (guard/forbidden.hmac).
+**/public-disclosure-denylist.txt

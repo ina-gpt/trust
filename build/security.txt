@@ -1,0 +1,11 @@
+# INA GPT security policy — INA GPT GmbH
+# https://inagpt.com
+
+Contact: mailto:security@inagpt.com
+Contact: mailto:info@inagpt.com
+Expires: 2027-09-12T00:00:00Z
+Preferred-Languages: de, en, fa
+Canonical: https://inagpt.com/.well-known/security.txt
+Policy: https://inagpt.com/security
+Acknowledgments: https://inagpt.com/security#acknowledgments
+Hiring: https://inagpt.com/careers

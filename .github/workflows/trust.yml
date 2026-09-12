@@ -1,0 +1,131 @@
+name: trust
+
+# Every published compliance claim is generated from data/credentials.yaml and
+# verified here. The jobs are the SAME commands a reader can run from a clean
+# clone (`make check`, `make negative`, `make links`) — a CI-only check drifts
+# from what a contributor can reproduce, and then nobody reproduces it.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Monthly. Link rot and an approaching renewal are both silent from inside.
+    - cron: '0 6 1 * *'
+
+concurrency:
+  group: trust-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # FAIL CLOSED. An absent secret must not become a passing build: without
+      # the key the disclosure guard cannot run, and a skipped guard is a green
+      # tick that means nothing.
+      - name: the disclosure guard key must be present
+        env:
+          DISCLOSURE_GUARD_KEY: ${{ secrets.DISCLOSURE_GUARD_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DISCLOSURE_GUARD_KEY:-}" ]; then
+            echo "::error::DISCLOSURE_GUARD_KEY is not set. The disclosure guard cannot run."
+            echo "::error::Refusing to pass: a skipped guard is not a clean scan."
+            exit 1
+          fi
+          echo "guard key present (${#DISCLOSURE_GUARD_KEY} chars)"
+      - name: make check
+        env:
+          DISCLOSURE_GUARD_KEY: ${{ secrets.DISCLOSURE_GUARD_KEY }}
+        run: make check
+
+  negative:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # n09b is skipped here on purpose: the plaintext denylist must not exist
+      # on a public runner. n09a proves the guard mechanism with a synthetic
+      # canary, so the guard is never unproven.
+      - name: make negative
+        env:
+          DISCLOSURE_GUARD_KEY: ${{ secrets.DISCLOSURE_GUARD_KEY }}
+        run: make negative
+
+  links:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: make links
+        id: links
+        run: |
+          set -euo pipefail
+          make links 2>&1 | tee links.log
+      - name: open or update an issue when a link is dead or a renewal is near
+        if: ${{ always() && github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TITLE="Trust register: evidence link or renewal attention"
+          BODY=$(printf 'The monthly trust check reported something that needs a human.\n\n```\n%s\n```\n\nSource: `data/credentials.yaml`. Fix the register, not the generated output.\n' "$(cat links.log)")
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if grep -qE '^(DEAD|RENEWAL)' links.log; then
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+            else
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            fi
+          elif [ -n "$EXISTING" ]; then
+            gh issue close "$EXISTING" --repo "$GITHUB_REPOSITORY" --comment "The next scheduled run was clean: every evidence link resolves and no renewal is inside the 180-day horizon."
+          fi
+
+  publish:
+    needs: [validate, negative, links]
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # The org profile and the per-repo block are synced by scripts/sync.ts,
+      # which runs the disclosure guard over everything it is about to write
+      # BEFORE it writes it. Guard first, publish second — the other order
+      # publishes and then complains.
+      - name: sync the generated surface to every public repository
+        env:
+          DISCLOSURE_GUARD_KEY: ${{ secrets.DISCLOSURE_GUARD_KEY }}
+          GH_TOKEN: ${{ secrets.TRUST_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::TRUST_SYNC_TOKEN is not set — cannot write to sibling repositories."
+            exit 1
+          fi
+          npx tsx scripts/sync.ts --commit-sha="${GITHUB_SHA::7}"

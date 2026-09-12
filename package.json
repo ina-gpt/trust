@@ -1,0 +1,26 @@
+{
+  "name": "ina-trust",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Trust, compliance and verification data for INA GPT GmbH — single source of truth, generated artifacts, CI-enforced.",
+  "type": "module",
+  "engines": { "node": ">=20.11.0" },
+  "scripts": {
+    "validate": "tsx scripts/validate.ts",
+    "guard": "tsx scripts/guard.ts",
+    "generate": "tsx scripts/generate.ts",
+    "links": "tsx scripts/check-links.ts",
+    "negative": "tsx scripts/negative.ts",
+    "build-denylist": "tsx scripts/build-denylist.ts"
+  },
+  "dependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "yaml": "2.5.1"
+  },
+  "devDependencies": {
+    "tsx": "4.19.1",
+    "typescript": "5.6.2",
+    "@types/node": "20.16.5"
+  }
+}
